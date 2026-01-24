@@ -15,6 +15,12 @@ instance/
 *.db
 *.sqlite3
 
+# Local data files (Excel, CSV)
+data/*.xlsx
+data/*.csv
+# But keep the directory structure
+!data/.gitkeep
+
 # Environment variables
 .env
 .env.local

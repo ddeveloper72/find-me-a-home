@@ -15,6 +15,9 @@ requests==2.31.0
 # Geospatial calculations
 geopy==2.4.1
 
+# Excel file parsing
+openpyxl==3.1.2
+
 # Azure Integration
 msal==1.26.0
 azure-storage-blob==12.19.0
