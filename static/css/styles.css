@@ -1,0 +1,219 @@
+/* Custom Styles for Find Me a Home */
+
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --info-color: #0dcaf0;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #0a58ca 100%);
+    min-height: 400px;
+}
+
+/* Card hover effects */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Property cards */
+.property-card {
+    height: 100%;
+    overflow: hidden;
+}
+
+.property-card img {
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.property-card:hover img {
+    transform: scale(1.05);
+}
+
+.property-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.property-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+/* Map container */
+.map-container {
+    height: 500px;
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.map-sidebar {
+    height: 500px;
+    overflow-y: auto;
+}
+
+/* Favorite button */
+.btn-favorite {
+    transition: all 0.3s ease;
+}
+
+.btn-favorite.active {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.btn-favorite:hover {
+    transform: scale(1.1);
+}
+
+/* Search filters */
+.filter-section {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* School and transport info cards */
+.info-card {
+    border-left: 4px solid var(--primary-color);
+    padding-left: 15px;
+}
+
+.info-card.school {
+    border-left-color: var(--success-color);
+}
+
+.info-card.transport {
+    border-left-color: var(--info-color);
+}
+
+/* Distance badge */
+.distance-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    display: none;
+    text-align: center;
+    padding: 20px;
+}
+
+.loading-spinner.active {
+    display: block;
+}
+
+/* Footer */
+footer a {
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: white !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: 300px;
+    }
+    
+    .property-card img {
+        height: 150px;
+    }
+    
+    .map-container,
+    .map-sidebar {
+        height: 400px;
+    }
+}
+
+/* Custom scrollbar */
+.map-sidebar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.map-sidebar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.map-sidebar::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.map-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Pagination */
+.pagination {
+    margin-top: 30px;
+}
+
+/* Alert customization */
+.alert {
+    border-left: 4px solid;
+    border-radius: 0;
+}
+
+.alert-success {
+    border-left-color: var(--success-color);
+}
+
+.alert-danger {
+    border-left-color: var(--danger-color);
+}
+
+.alert-info {
+    border-left-color: var(--info-color);
+}
+
+.alert-warning {
+    border-left-color: var(--warning-color);
+}
+
+/* Form improvements */
+.form-label {
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Rank badge */
+.rank-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}

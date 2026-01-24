@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block title %}Search - Find Me a Home{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4"><i class="fas fa-search"></i> Find Your Perfect Home</h1>
+
+    <form method="get" action="{{ url_for('search.search_results') }}" onsubmit="return validateSearchForm()">
+        <!-- Price Range -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-euro-sign"></i> Price Range</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="min_price" class="form-label">Minimum Price</label>
+                        <input type="number" class="form-control" id="min_price" name="min_price" placeholder="€0"
+                            min="0" step="1000">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="max_price" class="form-label">Maximum Price</label>
+                        <input type="number" class="form-control" id="max_price" name="max_price"
+                            placeholder="€1,000,000" min="0" step="1000">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Location -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Location</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="counties" class="form-label">Counties</label>
+                        <select class="form-select" name="counties" id="counties" multiple size="5">
+                            <option value="Dublin">Dublin</option>
+                            <option value="Cork">Cork</option>
+                            <option value="Galway">Galway</option>
+                            <option value="Limerick">Limerick</option>
+                            <option value="Wicklow">Wicklow</option>
+                            <option value="Meath">Meath</option>
+                            <option value="Kildare">Kildare</option>
+                            <option value="Kerry">Kerry</option>
+                            <option value="Waterford">Waterford</option>
+                            <option value="Clare">Clare</option>
+                        </select>
+                        <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="cities" class="form-label">Cities/Towns (Optional)</label>
+                        <input type="text" class="form-control" name="cities" id="cities"
+                            placeholder="e.g., Dublin, Cork">
+                        <small class="form-text text-muted">Separate multiple cities with commas</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Property Details -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-home"></i> Property Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="min_bedrooms" class="form-label">Minimum Bedrooms</label>
+                        <select class="form-select" name="min_bedrooms" id="min_bedrooms">
+                            <option value="">Any</option>
+                            <option value="1">1+</option>
+                            <option value="2">2+</option>
+                            <option value="3">3+</option>
+                            <option value="4">4+</option>
+                            <option value="5">5+</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="property_types" class="form-label">Property Type</label>
+                        <select class="form-select" name="property_types" id="property_types" multiple size="3">
+                            <option value="house">House</option>
+                            <option value="apartment">Apartment</option>
+                            <option value="bungalow">Bungalow</option>
+                            <option value="townhouse">Townhouse</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="min_size_sqm" class="form-label">Minimum Size (m²)</label>
+                        <input type="number" class="form-control" name="min_size_sqm" id="min_size_sqm"
+                            placeholder="e.g., 100" min="0">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="max_size_sqm" class="form-label">Maximum Size (m²)</label>
+                        <input type="number" class="form-control" name="max_size_sqm" id="max_size_sqm"
+                            placeholder="e.g., 300" min="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- School Preferences -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-school"></i> School Preferences</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label for="max_school_distance_km" class="form-label">
+                            Maximum Distance from School (km)
+                        </label>
+                        <input type="number" class="form-control" name="max_school_distance_km"
+                            id="max_school_distance_km" placeholder="e.g., 5" min="0" step="0.5">
+                        <small class="form-text text-muted">Leave empty to skip school proximity filter</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transport Preferences -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-train"></i> Transport Preferences</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="max_transport_distance_km" class="form-label">
+                            Maximum Distance from Transport (km)
+                        </label>
+                        <input type="number" class="form-control" name="max_transport_distance_km"
+                            id="max_transport_distance_km" placeholder="e.g., 2" min="0" step="0.5">
+                        <small class="form-text text-muted">Leave empty to skip transport proximity filter</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-between">
+            <button type="reset" class="btn btn-secondary">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+            <div>
+                {% if current_user.is_authenticated %}
+                <button type="button" class="btn btn-info me-2" onclick="saveCurrentSearch()">
+                    <i class="fas fa-save"></i> Save Search
+                </button>
+                {% endif %}
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Search Properties
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% if current_user.is_authenticated %}
+<script>
+    function saveCurrentSearch() {
+        const form = document.querySelector('form');
+        const formData = new FormData(form);
+        const criteria = {};
+
+        for (let [key, value] of formData.entries()) {
+            if (value) {
+                if (key === 'counties' || key === 'property_types') {
+                    if (!criteria[key]) criteria[key] = [];
+                    criteria[key].push(value);
+                } else if (key === 'cities') {
+                    criteria[key] = value.split(',').map(c => c.trim());
+                } else {
+                    criteria[key] = value;
+                }
+            }
+        }
+
+        saveSearch(criteria);
+    }
+</script>
+{% endif %}
+{% endblock %}

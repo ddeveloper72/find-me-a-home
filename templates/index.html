@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Find Me a Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-3">Find Your Perfect Home in Ireland</h1>
+                <p class="lead mb-4">Search for properties with comprehensive information about nearby schools and
+                    transport options.</p>
+                {% if not current_user.is_authenticated %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-light btn-lg">
+                    <i class="fas fa-user-plus"></i> Get Started
+                </a>
+                {% else %}
+                <a href="{{ url_for('search.search_form') }}" class="btn btn-light btn-lg">
+                    <i class="fas fa-search"></i> Start Searching
+                </a>
+                {% endif %}
+            </div>
+            <div class="col-lg-6">
+                <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600" alt="Irish House"
+                    class="img-fluid rounded shadow" onerror="this.style.display='none'">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container my-5">
+    <h2 class="text-center mb-5">Why Use Find Me a Home?</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <div class="feature-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width: 80px; height: 80px;">
+                        <i class="fas fa-home fa-2x"></i>
+                    </div>
+                    <h4 class="card-title">Property Listings</h4>
+                    <p class="card-text">Browse comprehensive property listings from multiple sources across Ireland.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <div class="feature-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width: 80px; height: 80px;">
+                        <i class="fas fa-school fa-2x"></i>
+                    </div>
+                    <h4 class="card-title">School Information</h4>
+                    <p class="card-text">Find detailed information about nearby secondary schools and their
+                        characteristics.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <div class="feature-icon bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width: 80px; height: 80px;">
+                        <i class="fas fa-train fa-2x"></i>
+                    </div>
+                    <h4 class="card-title">Transport Options</h4>
+                    <p class="card-text">View nearby train stations, bus stops, and real-time transport information.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-3">
+        <div class="col-md-4">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <div class="feature-icon bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width: 80px; height: 80px;">
+                        <i class="fas fa-bell fa-2x"></i>
+                    </div>
+                    <h4 class="card-title">Smart Alerts</h4>
+                    <p class="card-text">Get notified when new properties matching your criteria become available.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <div class="feature-icon bg-danger text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width: 80px; height: 80px;">
+                        <i class="fas fa-heart fa-2x"></i>
+                    </div>
+                    <h4 class="card-title">Favorites & Rankings</h4>
+                    <p class="card-text">Save and rank your favorite properties with personal notes.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 text-center shadow-sm">
+                <div class="card-body">
+                    <div class="feature-icon bg-secondary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width: 80px; height: 80px;">
+                        <i class="fas fa-map-marked-alt fa-2x"></i>
+                    </div>
+                    <h4 class="card-title">Interactive Maps</h4>
+                    <p class="card-text">Visualize properties, schools, and transport on interactive maps.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+{% if not current_user.is_authenticated %}
+<div class="bg-light py-5">
+    <div class="container text-center">
+        <h2 class="mb-4">Ready to Find Your Dream Home?</h2>
+        <p class="lead mb-4">Sign in to save searches, get alerts, and track your favorite properties.</p>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-sign-in-alt"></i> Sign In Now
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

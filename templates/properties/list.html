@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}Properties - Find Me a Home{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1><i class="fas fa-building"></i> Properties for Sale</h1>
+        </div>
+        <div class="col-auto">
+            <a href="{{ url_for('search.search_form') }}" class="btn btn-primary">
+                <i class="fas fa-search"></i> Advanced Search
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-section">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Min Price</label>
+                <input type="number" name="min_price" class="form-control"
+                    value="{{ request.args.get('min_price', '') }}" placeholder="€0">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Max Price</label>
+                <input type="number" name="max_price" class="form-control"
+                    value="{{ request.args.get('max_price', '') }}" placeholder="€1,000,000">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Bedrooms</label>
+                <select name="min_bedrooms" class="form-select">
+                    <option value="">Any</option>
+                    {% for i in range(1, 6) %}
+                    <option value="{{ i }}" {% if request.args.get('min_bedrooms')==i|string %}selected{% endif %}>
+                        {{ i }}+
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">County</label>
+                <select name="county" class="form-select">
+                    <option value="">All</option>
+                    <option value="Dublin">Dublin</option>
+                    <option value="Cork">Cork</option>
+                    <option value="Galway">Galway</option>
+                    <option value="Limerick">Limerick</option>
+                    <option value="Wicklow">Wicklow</option>
+                    <!-- Add more counties -->
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-filter"></i> Filter
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Property Grid -->
+    <div class="row g-4">
+        {% if properties.items %}
+        {% for property in properties.items %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card property-card">
+                <div class="position-relative">
+                    {% if property.image_urls and property.image_urls|length > 0 %}
+                    <img src="{{ property.image_urls[0] }}" class="card-img-top" alt="{{ property.title }}">
+                    {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <div class="text-center text-muted">
+                            <i class="fas fa-home fa-3x mb-2"></i>
+                            <p class="mb-0">No Image Available</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if property.property_type %}
+                    <span class="badge bg-primary property-badge">{{ property.property_type }}</span>
+                    {% endif %}
+
+                    {% if current_user.is_authenticated %}
+                    <button class="btn btn-sm btn-light property-badge" style="top: 10px; left: 10px; right: auto;"
+                        id="favorite-btn-{{ property.id }}" onclick="toggleFavorite({{ property.id }})">
+                        <i class="far fa-heart"></i>
+                    </button>
+                    {% endif %}
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{{ url_for('properties.property_detail', property_id=property.id) }}"
+                            class="text-decoration-none text-dark">
+                            {{ property.title }}
+                        </a>
+                    </h5>
+
+                    <p class="property-price">€{{ "{:,.0f}".format(property.price) }}</p>
+
+                    <p class="card-text">
+                        <small class="text-muted">
+                            <i class="fas fa-map-marker-alt"></i> {{ property.address }}
+                        </small>
+                    </p>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            {% if property.bedrooms %}
+                            <span class="badge bg-light text-dark me-1">
+                                <i class="fas fa-bed"></i> {{ property.bedrooms }}
+                            </span>
+                            {% endif %}
+                            {% if property.bathrooms %}
+                            <span class="badge bg-light text-dark me-1">
+                                <i class="fas fa-bath"></i> {{ property.bathrooms }}
+                            </span>
+                            {% endif %}
+                            {% if property.size_sqm %}
+                            <span class="badge bg-light text-dark">
+                                {{ property.size_sqm|int }} m²
+                            </span>
+                            {% endif %}
+                        </div>
+                        {% if property.ber_rating %}
+                        <span class="badge bg-success">BER: {{ property.ber_rating }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('properties.property_detail', property_id=property.id) }}"
+                        class="btn btn-outline-primary w-100">
+                        View Details <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle fa-3x mb-3 d-block"></i>
+                <h4>No properties found</h4>
+                <p>Try adjusting your search criteria or check back later for new listings.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Pagination -->
+    {% if properties.pages > 1 %}
+    <nav aria-label="Property pagination">
+        <ul class="pagination justify-content-center">
+            {% if properties.has_prev %}
+            <li class="page-item">
+                <a class="page-link"
+                    href="{{ url_for('properties.list_properties', page=properties.prev_num, **request.args) }}">
+                    Previous
+                </a>
+            </li>
+            {% endif %}
+
+            {% for page_num in properties.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+            <li class="page-item {% if page_num == properties.page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('properties.list_properties', page=page_num, **request.args) }}">
+                    {{ page_num }}
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+            {% endfor %}
+
+            {% if properties.has_next %}
+            <li class="page-item">
+                <a class="page-link"
+                    href="{{ url_for('properties.list_properties', page=properties.next_num, **request.args) }}">
+                    Next
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
