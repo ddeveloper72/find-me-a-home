@@ -80,10 +80,44 @@ Find me a home/
 ## Data Sources
 
 ### Properties
-**Note**: Major Irish property sites (Daft.ie, MyHome.ie) don't have public APIs. Options:
-1. Web scraping (check terms of service)
-2. Third-party property data services
-3. Manual data entry for testing
+We have discovered several API options for Irish property data:
+
+#### 1. **MyHome.ie API** (Undocumented - Currently Used)
+- **Endpoint**: `https://api.myhome.ie/home`
+- **Format**: JSON
+- **Status**: ✅ Working (undocumented internal API)
+- **Data**: Property listings, prices, BER ratings, images, addresses
+- **Limitations**: No coordinates, no descriptions, structure may change
+- **Implementation**: `scripts/import_myhome_properties.py`
+- **Owner**: The Irish Times (verified via DNS: irishtimes.map.fastly.net)
+
+#### 2. **Daft.ie API** (Documented - Pending Access)
+- **Endpoint**: `https://api.daft.ie/v3/`
+- **Format**: SOAP/XML
+- **Status**: ⏳ Awaiting personal developer API key
+- **Access**: Free for personal use (1,000 requests/day)
+- **Data**: Full property details with coordinates, images, search filters
+- **Documentation**: https://api.daft.ie/doc/v3/
+- **Terms**: https://api.daft.ie/terms/
+- **Implementation**: `scripts/import_daft_properties.py` (ready)
+- **Setup Guide**: See `DAFT_API_SETUP.md`
+
+#### 3. **Property.ie RSS Feeds** (Blocked)
+- **Status**: ❌ Blocks automated access (403 Forbidden)
+- **Note**: Feeds exist but actively prevent scraping
+- **Alternative**: Manual download possible but not automated
+
+#### 4. **PropertyInsight.ie API** (Historical Data)
+- **Status**: ❓ Requires contact for pricing
+- **Focus**: Historical price data, market analysis (600,000+ properties)
+- **Use Case**: Price trends rather than current listings
+- **Website**: https://propertyinsight.ie/features/api
+
+**Current Strategy**: 
+- Use MyHome.ie API for immediate property data
+- Switch to Daft.ie API once personal key is approved
+- MyHome.ie provides good coverage but limited detail
+- Daft.ie will provide comprehensive data with coordinates
 
 ### Schools
 - Department of Education ArcGIS REST API
@@ -137,6 +171,7 @@ Find me a home/
 - `AZURE_AD_CLIENT_SECRET`: Azure AD B2C secret
 - `AZURE_AD_TENANT_NAME`: Azure AD B2C tenant
 - `AZURE_AD_AUTHORITY`: Azure AD B2C authority URL
+- `DAFT_API_KEY`: Daft.ie personal API key (optional, when available)
 - `GOOGLE_MAPS_API_KEY`: For geocoding (optional)
 - `MAIL_SERVER`, `MAIL_USERNAME`, `MAIL_PASSWORD`: For email alerts
 
@@ -161,15 +196,17 @@ Find me a home/
 - Status: Placeholder implementation
 
 ## Future Enhancements
-- [ ] Implement property scraping/API integration
+- [x] Property API integration (MyHome.ie working, Daft.ie ready)
+- [ ] Geocode MyHome.ie properties for map functionality
 - [ ] Add background jobs for data updates (APScheduler)
 - [ ] Implement email alert system
 - [ ] Add property image galleries
-- [ ] Price trend analysis
+- [ ] Price trend analysis (PropertyInsight.ie integration)
 - [ ] Mortgage calculator
 - [ ] Commute time calculator
 - [ ] Mobile responsive improvements
 - [ ] Unit tests and CI/CD
+- [ ] Switch to Daft.ie API when personal key is approved
 
 ## Resources & Links
 
@@ -178,9 +215,11 @@ Find me a home/
 - GTFS-R Data: https://data.gov.ie/dataset/realtime-passenger-information-gtfsr
 
 **Properties:**
-- MyHome.ie: www.myhome.ie (no public API)
-- Daft.ie: www.daft.ie (no public API)
-- Property.ie: www.property.ie (no public API)
+- MyHome.ie: www.myhome.ie | API: https://api.myhome.ie/home (undocumented)
+- Daft.ie: www.daft.ie | API: https://api.daft.ie/v3/ (documented, personal use available)
+- Daft.ie Docs: https://api.daft.ie/doc/v3/ | Terms: https://api.daft.ie/terms/
+- Property.ie: www.property.ie (RSS feeds blocked for automation)
+- PropertyInsight.ie: https://propertyinsight.ie/features/api (commercial, historical data)
 
 **Schools:**
 - Find a School: https://www.gov.ie/en/department-of-education/services/find-a-school/

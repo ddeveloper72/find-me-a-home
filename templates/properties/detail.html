@@ -162,7 +162,7 @@
 
 <script>
     // Initialize map
-    const map = L.map('map').setView([{{ property.latitude }}, {{ property.longitude }}], 14);
+    const map = L.map('map').setView([{{ property.latitude }}, { { property.longitude } }], 14);
 
     // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -183,7 +183,7 @@
         .bindPopup('<strong>{{ property.title }}</strong><br>€{{ "{:,.0f}".format(property.price) }}');
 
     // Add school markers
-    {% for school in nearby_schools[:10] %}
+    {% for school in nearby_schools[: 10] %}
     {% if school.latitude and school.longitude %}
     const schoolIcon{{ loop.index }} = L.divIcon({
         html: '<i class="fas fa-graduation-cap text-primary fs-5"></i>',

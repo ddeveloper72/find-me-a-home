@@ -134,23 +134,23 @@
         <div class="card-body">
             <div class="row g-3 mb-3">
                 {% if property_sources %}
-                    {% for source, count in property_sources.items() %}
-                    <div class="col-md-4">
-                        <div class="card border-{% if source == 'daft.ie' %}primary{% else %}secondary{% endif %}">
-                            <div class="card-body text-center">
-                                <h6 class="text-muted mb-2">
-                                    {% if source == 'daft.ie' %}
-                                        <i class="fas fa-link"></i> Daft.ie
-                                    {% else %}
-                                        <i class="fas fa-flask"></i> {{ source|title }}
-                                    {% endif %}
-                                </h6>
-                                <h3 class="mb-0">{{ count }}</h3>
-                                <small class="text-muted">properties</small>
-                            </div>
+                {% for source, count in property_sources.items() %}
+                <div class="col-md-4">
+                    <div class="card border-{% if source == 'daft.ie' %}primary{% else %}secondary{% endif %}">
+                        <div class="card-body text-center">
+                            <h6 class="text-muted mb-2">
+                                {% if source == 'daft.ie' %}
+                                <i class="fas fa-link"></i> Daft.ie
+                                {% else %}
+                                <i class="fas fa-flask"></i> {{ source|title }}
+                                {% endif %}
+                            </h6>
+                            <h3 class="mb-0">{{ count }}</h3>
+                            <small class="text-muted">properties</small>
                         </div>
                     </div>
-                    {% endfor %}
+                </div>
+                {% endfor %}
                 {% else %}
                 <div class="col-12">
                     <p class="text-muted text-center mb-0">No properties in database yet</p>
@@ -162,12 +162,14 @@
                     <i class="fas fa-search"></i> Search All Sources
                 </a>
                 {% if property_sources.get('daft.ie', 0) > 0 %}
-                <a href="{{ url_for('search.search_results', source='daft.ie') }}" class="btn btn-outline-primary flex-fill">
+                <a href="{{ url_for('search.search_results', source='daft.ie') }}"
+                    class="btn btn-outline-primary flex-fill">
                     <i class="fas fa-filter"></i> Daft.ie Only
                 </a>
                 {% endif %}
                 {% if property_sources.get('sample', 0) > 0 %}
-                <a href="{{ url_for('search.search_results', source='sample') }}" class="btn btn-outline-secondary flex-fill">
+                <a href="{{ url_for('search.search_results', source='sample') }}"
+                    class="btn btn-outline-secondary flex-fill">
                     <i class="fas fa-filter"></i> Sample Only
                 </a>
                 {% endif %}
