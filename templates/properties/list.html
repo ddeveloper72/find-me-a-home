@@ -158,7 +158,7 @@
             {% if properties.has_prev %}
             <li class="page-item">
                 <a class="page-link"
-                    href="{{ url_for('properties.list_properties', page=properties.prev_num, **request.args) }}">
+                    href="{{ url_for('properties.list_properties', page=properties.prev_num, **request.args.to_dict(flat=False)|rejectattr('0', 'eq', 'page')|list|first|default({})) }}">
                     Previous
                 </a>
             </li>
@@ -166,8 +166,10 @@
 
             {% for page_num in properties.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
             {% if page_num %}
+            {% set args_dict = dict(request.args) %}
+            {% set _ = args_dict.pop('page', None) %}
             <li class="page-item {% if page_num == properties.page %}active{% endif %}">
-                <a class="page-link" href="{{ url_for('properties.list_properties', page=page_num, **request.args) }}">
+                <a class="page-link" href="{{ url_for('properties.list_properties', page=page_num, **args_dict) }}">
                     {{ page_num }}
                 </a>
             </li>
@@ -178,8 +180,10 @@
 
             {% if properties.has_next %}
             <li class="page-item">
+                {% set args_dict = dict(request.args) %}
+                {% set _ = args_dict.pop('page', None) %}
                 <a class="page-link"
-                    href="{{ url_for('properties.list_properties', page=properties.next_num, **request.args) }}">
+                    href="{{ url_for('properties.list_properties', page=properties.next_num, **args_dict) }}">
                     Next
                 </a>
             </li>
