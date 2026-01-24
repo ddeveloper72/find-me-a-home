@@ -12,6 +12,9 @@ alembic==1.13.1
 # API Requests
 requests==2.31.0
 
+# Geospatial calculations
+geopy==2.4.1
+
 # Azure Integration
 msal==1.26.0
 azure-storage-blob==12.19.0
