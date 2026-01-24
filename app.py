@@ -55,9 +55,24 @@ def test_login():
 @app.route('/dashboard')
 @login_required
 def dashboard():
+    from sqlalchemy import func
+    
     saved_searches = SavedSearch.query.filter_by(user_id=current_user.id).all()
     favorites = FavoriteProperty.query.filter_by(user_id=current_user.id).all()
-    return render_template('dashboard.html', saved_searches=saved_searches, favorites=favorites)
+    
+    # Get property counts by source
+    source_stats = db.session.query(
+        Property.source,
+        func.count(Property.id)
+    ).group_by(Property.source).all()
+    
+    # Convert to dictionary
+    sources = {source: count for source, count in source_stats}
+    
+    return render_template('dashboard.html', 
+                          saved_searches=saved_searches, 
+                          favorites=favorites,
+                          property_sources=sources)
 
 if __name__ == '__main__':
     with app.app_context():

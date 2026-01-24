@@ -25,6 +25,8 @@ def search_results():
         'property_types': request.args.getlist('property_types'),
         'min_size_sqm': request.args.get('min_size_sqm', type=float),
         'max_size_sqm': request.args.get('max_size_sqm', type=float),
+        'ber_rating': request.args.get('ber_rating'),
+        'source': request.args.get('source'),
         'max_school_distance_km': request.args.get('max_school_distance_km', type=float),
         'max_transport_distance_km': request.args.get('max_transport_distance_km', type=float),
     }

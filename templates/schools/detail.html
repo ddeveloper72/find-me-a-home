@@ -76,7 +76,8 @@
                         <li class="mb-2">
                             <i class="bi bi-pin-map text-primary"></i>
                             <strong>Coordinates:</strong><br>
-                            <small class="text-muted">{{ "%.4f"|format(school.latitude) }}, {{ "%.4f"|format(school.longitude) }}</small>
+                            <small class="text-muted">{{ "%.4f"|format(school.latitude) }}, {{
+                                "%.4f"|format(school.longitude) }}</small>
                         </li>
                         {% endif %}
                     </ul>
@@ -87,8 +88,8 @@
                 <div class="card-body">
                     <h3 class="h6 mb-3">Find Nearby Properties</h3>
                     <p class="small text-muted">Search for properties near this school</p>
-                    <a href="{{ url_for('properties.list_properties', lat=school.latitude, lon=school.longitude, max_distance=5) }}" 
-                       class="btn btn-primary w-100">
+                    <a href="{{ url_for('properties.list_properties', lat=school.latitude, lon=school.longitude, max_distance=5) }}"
+                        class="btn btn-primary w-100">
                         <i class="bi bi-house"></i> View Nearby Homes
                     </a>
                 </div>
@@ -108,7 +109,7 @@
 
 <script>
     // Initialize map
-    const map = L.map('map').setView([{{ school.latitude }}, {{ school.longitude }}], 15);
+    const map = L.map('map').setView([{{ school.latitude }}, { { school.longitude } }], 15);
 
     // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

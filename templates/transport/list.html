@@ -19,23 +19,32 @@
                     <label for="type" class="form-label">Station Type</label>
                     <select class="form-select" id="type" name="type">
                         <option value="">All Types</option>
-                        <option value="Train" {% if request.args.get('type') == 'Train' %}selected{% endif %}>Train</option>
-                        <option value="DART" {% if request.args.get('type') == 'DART' %}selected{% endif %}>DART</option>
-                        <option value="Luas" {% if request.args.get('type') == 'Luas' %}selected{% endif %}>Luas</option>
+                        <option value="Train" {% if request.args.get('type')=='Train' %}selected{% endif %}>Train
+                        </option>
+                        <option value="DART" {% if request.args.get('type')=='DART' %}selected{% endif %}>DART</option>
+                        <option value="Luas" {% if request.args.get('type')=='Luas' %}selected{% endif %}>Luas</option>
                     </select>
                 </div>
                 <div class="col-md-6">
                     <label for="county" class="form-label">County</label>
                     <select class="form-select" id="county" name="county">
                         <option value="">All Counties</option>
-                        <option value="Dublin" {% if request.args.get('county') == 'Dublin' %}selected{% endif %}>Dublin</option>
-                        <option value="Cork" {% if request.args.get('county') == 'Cork' %}selected{% endif %}>Cork</option>
-                        <option value="Galway" {% if request.args.get('county') == 'Galway' %}selected{% endif %}>Galway</option>
-                        <option value="Limerick" {% if request.args.get('county') == 'Limerick' %}selected{% endif %}>Limerick</option>
-                        <option value="Waterford" {% if request.args.get('county') == 'Waterford' %}selected{% endif %}>Waterford</option>
-                        <option value="Kildare" {% if request.args.get('county') == 'Kildare' %}selected{% endif %}>Kildare</option>
-                        <option value="Wicklow" {% if request.args.get('county') == 'Wicklow' %}selected{% endif %}>Wicklow</option>
-                        <option value="Meath" {% if request.args.get('county') == 'Meath' %}selected{% endif %}>Meath</option>
+                        <option value="Dublin" {% if request.args.get('county')=='Dublin' %}selected{% endif %}>Dublin
+                        </option>
+                        <option value="Cork" {% if request.args.get('county')=='Cork' %}selected{% endif %}>Cork
+                        </option>
+                        <option value="Galway" {% if request.args.get('county')=='Galway' %}selected{% endif %}>Galway
+                        </option>
+                        <option value="Limerick" {% if request.args.get('county')=='Limerick' %}selected{% endif %}>
+                            Limerick</option>
+                        <option value="Waterford" {% if request.args.get('county')=='Waterford' %}selected{% endif %}>
+                            Waterford</option>
+                        <option value="Kildare" {% if request.args.get('county')=='Kildare' %}selected{% endif %}>
+                            Kildare</option>
+                        <option value="Wicklow" {% if request.args.get('county')=='Wicklow' %}selected{% endif %}>
+                            Wicklow</option>
+                        <option value="Meath" {% if request.args.get('county')=='Meath' %}selected{% endif %}>Meath
+                        </option>
                     </select>
                 </div>
                 <div class="col-12">
@@ -74,7 +83,8 @@
                         {% for station in stations %}
                         <tr>
                             <td>
-                                <a href="{{ url_for('transport.station_detail', station_id=station.id) }}" class="text-decoration-none">
+                                <a href="{{ url_for('transport.station_detail', station_id=station.id) }}"
+                                    class="text-decoration-none">
                                     <strong>{{ station.name }}</strong>
                                 </a>
                             </td>
@@ -91,8 +101,8 @@
                                 <small class="text-muted">{{ station.routes or 'N/A' }}</small>
                             </td>
                             <td>
-                                <a href="{{ url_for('transport.station_detail', station_id=station.id) }}" 
-                                   class="btn btn-sm btn-outline-primary">
+                                <a href="{{ url_for('transport.station_detail', station_id=station.id) }}"
+                                    class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-eye"></i> View
                                 </a>
                             </td>

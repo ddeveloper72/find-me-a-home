@@ -10,7 +10,8 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h1><i class="bi bi-search"></i> Search Results</h1>
-                    <p class="text-muted">{{ properties|length }} propert{% if properties|length != 1 %}ies{% else %}y{% endif %} found</p>
+                    <p class="text-muted">{{ properties|length }} propert{% if properties|length != 1 %}ies{% else %}y{%
+                        endif %} found</p>
                 </div>
                 <div>
                     <a href="{{ url_for('search.search_form') }}" class="btn btn-outline-secondary">
@@ -33,7 +34,7 @@
             <div class="d-flex flex-wrap gap-2">
                 {% if criteria.min_price or criteria.max_price %}
                 <span class="badge bg-primary">
-                    Price: 
+                    Price:
                     {% if criteria.min_price and criteria.max_price %}
                     €{{ "{:,.0f}".format(criteria.min_price) }} - €{{ "{:,.0f}".format(criteria.max_price) }}
                     {% elif criteria.min_price %}
@@ -60,6 +61,14 @@
                 <span class="badge bg-primary">Types: {{ criteria.property_types|join(', ')|title }}</span>
                 {% endif %}
 
+                {% if criteria.ber_rating %}
+                <span class="badge bg-success">BER: {{ criteria.ber_rating }} or Better</span>
+                {% endif %}
+
+                {% if criteria.source %}
+                <span class="badge bg-info">Source: {{ criteria.source|title }}</span>
+                {% endif %}
+
                 {% if criteria.max_school_distance_km %}
                 <span class="badge bg-success">Near Schools: {{ criteria.max_school_distance_km }} km</span>
                 {% endif %}
@@ -68,7 +77,9 @@
                 <span class="badge bg-success">Near Transport: {{ criteria.max_transport_distance_km }} km</span>
                 {% endif %}
 
-                {% if not (criteria.min_price or criteria.max_price or criteria.min_bedrooms or criteria.counties or criteria.cities or criteria.property_types or criteria.max_school_distance_km or criteria.max_transport_distance_km) %}
+                {% if not (criteria.min_price or criteria.max_price or criteria.min_bedrooms or criteria.counties or
+                criteria.cities or criteria.property_types or criteria.ber_rating or criteria.source or 
+                criteria.max_school_distance_km or criteria.max_transport_distance_km) %}
                 <span class="text-muted">No filters applied - showing all properties</span>
                 {% endif %}
             </div>
@@ -84,8 +95,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <h5 class="card-title mb-0">{{ property.title }}</h5>
-                        <button class="btn btn-sm btn-outline-danger favorite-btn" 
-                                data-property-id="{{ property.id }}">
+                        <button class="btn btn-sm btn-outline-danger favorite-btn" data-property-id="{{ property.id }}">
                             <i class="bi bi-heart"></i>
                         </button>
                     </div>
@@ -113,10 +123,27 @@
 
                     <div class="mb-3">
                         <span class="badge bg-secondary">{{ property.property_type }}</span>
+                        {% if property.ber_rating %}
+                        <span class="badge 
+                            {% if property.ber_rating.startswith('A') %}bg-success
+                            {% elif property.ber_rating.startswith('B') %}bg-info
+                            {% elif property.ber_rating.startswith('C') %}bg-primary
+                            {% elif property.ber_rating.startswith('D') %}bg-warning text-dark
+                            {% else %}bg-danger
+                            {% endif %}">
+                            <i class="fas fa-bolt"></i> BER {{ property.ber_rating }}
+                        </span>
+                        {% endif %}
+                        {% if property.source %}
+                        <span class="badge bg-light text-dark">
+                            <i class="fas fa-{% if property.source == 'daft.ie' %}link{% else %}flask{% endif %}"></i>
+                            {{ property.source }}
+                        </span>
+                        {% endif %}
                     </div>
 
-                    <a href="{{ url_for('properties.property_detail', property_id=property.id) }}" 
-                       class="btn btn-primary w-100">
+                    <a href="{{ url_for('properties.property_detail', property_id=property.id) }}"
+                        class="btn btn-primary w-100">
                         View Details
                     </a>
                 </div>
@@ -151,8 +178,8 @@
                 <form id="saveSearchForm">
                     <div class="mb-3">
                         <label for="searchName" class="form-label">Search Name</label>
-                        <input type="text" class="form-control" id="searchName" 
-                               placeholder="e.g. Dublin 3-bed homes" required>
+                        <input type="text" class="form-control" id="searchName" placeholder="e.g. Dublin 3-bed homes"
+                            required>
                     </div>
                     <div class="mb-3">
                         <label for="alertFrequency" class="form-label">Email Alert Frequency</label>
@@ -182,7 +209,7 @@
 <script>
     // Favorite functionality
     document.querySelectorAll('.favorite-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const propertyId = this.dataset.propertyId;
             const icon = this.querySelector('i');
             const isFavorite = icon.classList.contains('bi-heart-fill');
@@ -193,40 +220,40 @@
                     'Content-Type': 'application/json',
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    if (isFavorite) {
-                        icon.classList.remove('bi-heart-fill');
-                        icon.classList.add('bi-heart');
-                    } else {
-                        icon.classList.remove('bi-heart');
-                        icon.classList.add('bi-heart-fill');
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (isFavorite) {
+                            icon.classList.remove('bi-heart-fill');
+                            icon.classList.add('bi-heart');
+                        } else {
+                            icon.classList.remove('bi-heart');
+                            icon.classList.add('bi-heart-fill');
+                        }
                     }
-                }
-            })
-            .catch(error => console.error('Error:', error));
+                })
+                .catch(error => console.error('Error:', error));
         });
     });
 
     // Save search
     {% if current_user.is_authenticated %}
-    document.getElementById('saveSearchBtn').addEventListener('click', function() {
+    document.getElementById('saveSearchBtn').addEventListener('click', function () {
         const searchData = {
             name: document.getElementById('searchName').value,
             email_alerts: document.getElementById('emailAlerts').checked,
             alert_frequency: document.getElementById('alertFrequency').value,
-            min_price: {{ criteria.min_price|default('null') }},
-            max_price: {{ criteria.max_price|default('null') }},
-            counties: {{ criteria.counties|tojson if criteria.counties else '[]' }},
-            cities: {{ criteria.cities|tojson if criteria.cities else '[]' }},
-            min_bedrooms: {{ criteria.min_bedrooms|default('null') }},
-            max_bedrooms: {{ criteria.max_bedrooms|default('null') }},
-            property_types: {{ criteria.property_types|tojson if criteria.property_types else '[]' }},
-            min_size_sqm: {{ criteria.min_size_sqm|default('null') }},
-            max_size_sqm: {{ criteria.max_size_sqm|default('null') }},
-            max_school_distance_km: {{ criteria.max_school_distance_km|default('null') }},
-            max_transport_distance_km: {{ criteria.max_transport_distance_km|default('null') }}
+            min_price: {{ criteria.min_price if criteria.min_price else 'null' }},
+            max_price: {{ criteria.max_price if criteria.max_price else 'null' }},
+            counties: {{ (criteria.counties|tojson)|safe if criteria.counties else '[]' }},
+            cities: {{ (criteria.cities|tojson)|safe if criteria.cities else '[]' }},
+            min_bedrooms: {{ criteria.min_bedrooms if criteria.min_bedrooms else 'null' }},
+            max_bedrooms: {{ criteria.max_bedrooms if criteria.max_bedrooms else 'null' }},
+            property_types: {{ (criteria.property_types|tojson)|safe if criteria.property_types else '[]' }},
+            min_size_sqm: {{ criteria.min_size_sqm if criteria.min_size_sqm else 'null' }},
+            max_size_sqm: {{ criteria.max_size_sqm if criteria.max_size_sqm else 'null' }},
+            max_school_distance_km: {{ criteria.max_school_distance_km if criteria.max_school_distance_km else 'null' }},
+            max_transport_distance_km: {{ criteria.max_transport_distance_km if criteria.max_transport_distance_km else 'null' }}
         };
 
         fetch('/search/save', {

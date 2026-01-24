@@ -33,6 +33,19 @@ def find_matching_properties(criteria):
     if criteria.get('max_size_sqm'):
         query = query.filter(Property.size_sqm <= criteria['max_size_sqm'])
     
+    # BER rating filter (includes selected rating and better)
+    if criteria.get('ber_rating'):
+        ber_order = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3', 'D1', 'D2', 'E1', 'E2', 'F', 'G']
+        selected_rating = criteria['ber_rating']
+        if selected_rating in ber_order:
+            # Get all ratings equal to or better than selected
+            valid_ratings = ber_order[:ber_order.index(selected_rating) + 1]
+            query = query.filter(Property.ber_rating.in_(valid_ratings))
+    
+    # Data source filter
+    if criteria.get('source'):
+        query = query.filter(Property.source == criteria['source'])
+    
     # Get base properties
     properties = query.all()
     

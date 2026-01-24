@@ -33,16 +33,17 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a class="dropdown-item" href="{{ url_for('search.run_saved_search', search_id=search.id) }}">
+                                    <a class="dropdown-item"
+                                        href="{{ url_for('search.run_saved_search', search_id=search.id) }}">
                                         <i class="bi bi-search"></i> Run Search
                                     </a>
                                 </li>
-                                <li><hr class="dropdown-divider"></li>
                                 <li>
-                                    <a class="dropdown-item text-danger delete-search" 
-                                       href="#" 
-                                       data-search-id="{{ search.id }}"
-                                       data-search-name="{{ search.name }}">
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-danger delete-search" href="#"
+                                        data-search-id="{{ search.id }}" data-search-name="{{ search.name }}">
                                         <i class="bi bi-trash"></i> Delete
                                     </a>
                                 </li>
@@ -87,21 +88,24 @@
                         {% if search.counties %}
                         <div class="mb-2">
                             <strong class="d-block text-muted small">Counties</strong>
-                            {{ search.counties|join(', ') if search.counties is iterable and search.counties is not string else search.counties }}
+                            {{ search.counties|join(', ') if search.counties is iterable and search.counties is not
+                            string else search.counties }}
                         </div>
                         {% endif %}
 
                         {% if search.cities %}
                         <div class="mb-2">
                             <strong class="d-block text-muted small">Cities</strong>
-                            {{ search.cities|join(', ') if search.cities is iterable and search.cities is not string else search.cities }}
+                            {{ search.cities|join(', ') if search.cities is iterable and search.cities is not string
+                            else search.cities }}
                         </div>
                         {% endif %}
 
                         {% if search.property_types %}
                         <div class="mb-2">
                             <strong class="d-block text-muted small">Property Types</strong>
-                            {{ search.property_types|join(', ') if search.property_types is iterable and search.property_types is not string else search.property_types }}
+                            {{ search.property_types|join(', ') if search.property_types is iterable and
+                            search.property_types is not string else search.property_types }}
                         </div>
                         {% endif %}
 
@@ -123,11 +127,8 @@
                     <!-- Email Alerts -->
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input class="form-check-input toggle-alerts" 
-                                   type="checkbox" 
-                                   id="alerts-{{ search.id }}"
-                                   data-search-id="{{ search.id }}"
-                                   {% if search.email_alerts %}checked{% endif %}>
+                            <input class="form-check-input toggle-alerts" type="checkbox" id="alerts-{{ search.id }}"
+                                data-search-id="{{ search.id }}" {% if search.email_alerts %}checked{% endif %}>
                             <label class="form-check-label" for="alerts-{{ search.id }}">
                                 Email alerts ({{ search.alert_frequency or 'daily' }})
                             </label>
@@ -135,8 +136,7 @@
                     </div>
 
                     <div class="d-grid">
-                        <a href="{{ url_for('search.run_saved_search', search_id=search.id) }}" 
-                           class="btn btn-primary">
+                        <a href="{{ url_for('search.run_saved_search', search_id=search.id) }}" class="btn btn-primary">
                             <i class="bi bi-search"></i> Run Search
                         </a>
                     </div>
@@ -152,7 +152,8 @@
                 <div class="card-body text-center py-5">
                     <i class="bi bi-bookmark fs-1 text-muted mb-3 d-block"></i>
                     <h5>No Saved Searches</h5>
-                    <p class="text-muted">Save your search criteria to get email alerts when new properties match your requirements.</p>
+                    <p class="text-muted">Save your search criteria to get email alerts when new properties match your
+                        requirements.</p>
                     <a href="{{ url_for('search.search_form') }}" class="btn btn-primary">
                         <i class="bi bi-plus-circle"></i> Create Your First Search
                     </a>
@@ -189,7 +190,7 @@
     const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
 
     document.querySelectorAll('.delete-search').forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        btn.addEventListener('click', function (e) {
             e.preventDefault();
             deleteSearchId = this.dataset.searchId;
             document.getElementById('deleteName').textContent = this.dataset.searchName;
@@ -197,7 +198,7 @@
         });
     });
 
-    document.getElementById('confirmDelete').addEventListener('click', function() {
+    document.getElementById('confirmDelete').addEventListener('click', function () {
         if (deleteSearchId) {
             fetch(`/search/saved/${deleteSearchId}/delete`, {
                 method: 'POST',
@@ -205,19 +206,19 @@
                     'Content-Type': 'application/json',
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                }
-            })
-            .catch(error => console.error('Error:', error));
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         }
     });
 
     // Toggle email alerts
     document.querySelectorAll('.toggle-alerts').forEach(toggle => {
-        toggle.addEventListener('change', function() {
+        toggle.addEventListener('change', function () {
             const searchId = this.dataset.searchId;
             const enabled = this.checked;
 
@@ -228,17 +229,17 @@
                 },
                 body: JSON.stringify({ enabled: enabled })
             })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.success) {
-                    // Revert toggle if failed
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        // Revert toggle if failed
+                        this.checked = !enabled;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
                     this.checked = !enabled;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                this.checked = !enabled;
-            });
+                });
         });
     });
 </script>

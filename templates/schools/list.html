@@ -19,32 +19,46 @@
                     <label for="county" class="form-label">County</label>
                     <select class="form-select" id="county" name="county">
                         <option value="">All Counties</option>
-                        <option value="Dublin" {% if request.args.get('county') == 'Dublin' %}selected{% endif %}>Dublin</option>
-                        <option value="Cork" {% if request.args.get('county') == 'Cork' %}selected{% endif %}>Cork</option>
-                        <option value="Galway" {% if request.args.get('county') == 'Galway' %}selected{% endif %}>Galway</option>
-                        <option value="Limerick" {% if request.args.get('county') == 'Limerick' %}selected{% endif %}>Limerick</option>
-                        <option value="Waterford" {% if request.args.get('county') == 'Waterford' %}selected{% endif %}>Waterford</option>
-                        <option value="Kerry" {% if request.args.get('county') == 'Kerry' %}selected{% endif %}>Kerry</option>
-                        <option value="Kildare" {% if request.args.get('county') == 'Kildare' %}selected{% endif %}>Kildare</option>
-                        <option value="Wicklow" {% if request.args.get('county') == 'Wicklow' %}selected{% endif %}>Wicklow</option>
-                        <option value="Meath" {% if request.args.get('county') == 'Meath' %}selected{% endif %}>Meath</option>
+                        <option value="Dublin" {% if request.args.get('county')=='Dublin' %}selected{% endif %}>Dublin
+                        </option>
+                        <option value="Cork" {% if request.args.get('county')=='Cork' %}selected{% endif %}>Cork
+                        </option>
+                        <option value="Galway" {% if request.args.get('county')=='Galway' %}selected{% endif %}>Galway
+                        </option>
+                        <option value="Limerick" {% if request.args.get('county')=='Limerick' %}selected{% endif %}>
+                            Limerick</option>
+                        <option value="Waterford" {% if request.args.get('county')=='Waterford' %}selected{% endif %}>
+                            Waterford</option>
+                        <option value="Kerry" {% if request.args.get('county')=='Kerry' %}selected{% endif %}>Kerry
+                        </option>
+                        <option value="Kildare" {% if request.args.get('county')=='Kildare' %}selected{% endif %}>
+                            Kildare</option>
+                        <option value="Wicklow" {% if request.args.get('county')=='Wicklow' %}selected{% endif %}>
+                            Wicklow</option>
+                        <option value="Meath" {% if request.args.get('county')=='Meath' %}selected{% endif %}>Meath
+                        </option>
                     </select>
                 </div>
                 <div class="col-md-4">
                     <label for="type" class="form-label">School Type</label>
                     <select class="form-select" id="type" name="type">
                         <option value="">All Types</option>
-                        <option value="Primary" {% if request.args.get('type') == 'Primary' %}selected{% endif %}>Primary</option>
-                        <option value="Post-Primary" {% if request.args.get('type') == 'Post-Primary' %}selected{% endif %}>Post-Primary</option>
+                        <option value="Primary" {% if request.args.get('type')=='Primary' %}selected{% endif %}>Primary
+                        </option>
+                        <option value="Post-Primary" {% if request.args.get('type')=='Post-Primary' %}selected{% endif
+                            %}>Post-Primary</option>
                     </select>
                 </div>
                 <div class="col-md-4">
                     <label for="gender" class="form-label">Gender</label>
                     <select class="form-select" id="gender" name="gender">
                         <option value="">All</option>
-                        <option value="Mixed" {% if request.args.get('gender') == 'Mixed' %}selected{% endif %}>Mixed</option>
-                        <option value="Boys" {% if request.args.get('gender') == 'Boys' %}selected{% endif %}>Boys</option>
-                        <option value="Girls" {% if request.args.get('gender') == 'Girls' %}selected{% endif %}>Girls</option>
+                        <option value="Mixed" {% if request.args.get('gender')=='Mixed' %}selected{% endif %}>Mixed
+                        </option>
+                        <option value="Boys" {% if request.args.get('gender')=='Boys' %}selected{% endif %}>Boys
+                        </option>
+                        <option value="Girls" {% if request.args.get('gender')=='Girls' %}selected{% endif %}>Girls
+                        </option>
                     </select>
                 </div>
                 <div class="col-12">
@@ -83,12 +97,14 @@
                         {% for school in schools %}
                         <tr>
                             <td>
-                                <a href="{{ url_for('schools.school_detail', school_id=school.id) }}" class="text-decoration-none">
+                                <a href="{{ url_for('schools.school_detail', school_id=school.id) }}"
+                                    class="text-decoration-none">
                                     <strong>{{ school.name }}</strong>
                                 </a>
                             </td>
                             <td>
-                                <span class="badge {% if school.school_type == 'Primary' %}bg-primary{% else %}bg-success{% endif %}">
+                                <span
+                                    class="badge {% if school.school_type == 'Primary' %}bg-primary{% else %}bg-success{% endif %}">
                                     {{ school.school_type }}
                                 </span>
                             </td>
@@ -98,8 +114,8 @@
                                 <small class="text-muted">{{ school.address or 'Address not available' }}</small>
                             </td>
                             <td>
-                                <a href="{{ url_for('schools.school_detail', school_id=school.id) }}" 
-                                   class="btn btn-sm btn-outline-primary">
+                                <a href="{{ url_for('schools.school_detail', school_id=school.id) }}"
+                                    class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-eye"></i> View
                                 </a>
                             </td>

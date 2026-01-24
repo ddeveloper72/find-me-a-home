@@ -82,7 +82,8 @@
                                     <td><strong>{{ train.scheduled_departure }}</strong></td>
                                     <td>{{ train.destination }}</td>
                                     <td>
-                                        <span class="badge {% if train.status == 'On Time' %}bg-success{% else %}bg-warning{% endif %}">
+                                        <span
+                                            class="badge {% if train.status == 'On Time' %}bg-success{% else %}bg-warning{% endif %}">
                                             {{ train.status }}
                                         </span>
                                     </td>
@@ -123,7 +124,8 @@
                         <li class="mb-2">
                             <i class="bi bi-pin-map text-success"></i>
                             <strong>Coordinates:</strong><br>
-                            <small class="text-muted">{{ "%.4f"|format(station.latitude) }}, {{ "%.4f"|format(station.longitude) }}</small>
+                            <small class="text-muted">{{ "%.4f"|format(station.latitude) }}, {{
+                                "%.4f"|format(station.longitude) }}</small>
                         </li>
                     </ul>
                 </div>
@@ -133,8 +135,8 @@
                 <div class="card-body">
                     <h3 class="h6 mb-3">Find Nearby Properties</h3>
                     <p class="small text-muted">Search for properties near this station</p>
-                    <a href="{{ url_for('properties.list_properties', lat=station.latitude, lon=station.longitude, max_distance=2) }}" 
-                       class="btn btn-primary w-100">
+                    <a href="{{ url_for('properties.list_properties', lat=station.latitude, lon=station.longitude, max_distance=2) }}"
+                        class="btn btn-primary w-100">
                         <i class="bi bi-house"></i> View Nearby Homes
                     </a>
                 </div>
@@ -153,7 +155,7 @@
 
 <script>
     // Initialize map
-    const map = L.map('map').setView([{{ station.latitude }}, {{ station.longitude }}], 15);
+    const map = L.map('map').setView([{{ station.latitude }}, { { station.longitude } }], 15);
 
     // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

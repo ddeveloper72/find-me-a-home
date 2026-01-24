@@ -18,10 +18,9 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <h1 class="h2">{{ property.title }}</h1>
-                        <button class="btn btn-outline-danger" 
-                                id="favorite-btn-{{ property.id }}"
-                                data-property-id="{{ property.id }}"
-                                data-is-favorite="{{ 'true' if is_favorite else 'false' }}">
+                        <button class="btn btn-outline-danger" id="favorite-btn-{{ property.id }}"
+                            data-property-id="{{ property.id }}"
+                            data-is-favorite="{{ 'true' if is_favorite else 'false' }}">
                             <i class="bi {% if is_favorite %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
                             <span>{% if is_favorite %}Saved{% else %}Save{% endif %}</span>
                         </button>
@@ -173,7 +172,7 @@
 
     // Add property marker
     const propertyIcon = L.divIcon({
-        html: '<i class="bi bi-house-fill text-danger fs-3"></i>',
+        html: '<i class="fas fa-home text-danger fs-3"></i>',
         className: 'custom-marker',
         iconSize: [30, 30],
         iconAnchor: [15, 30]
@@ -187,7 +186,7 @@
     {% for school in nearby_schools[:10] %}
     {% if school.latitude and school.longitude %}
     const schoolIcon{{ loop.index }} = L.divIcon({
-        html: '<i class="bi bi-book text-primary fs-5"></i>',
+        html: '<i class="fas fa-graduation-cap text-primary fs-5"></i>',
         className: 'custom-marker',
         iconSize: [24, 24],
         iconAnchor: [12, 24]
@@ -200,9 +199,9 @@
     {% endfor %}
 
     // Add transport markers
-    {% for station in nearby_transport[:10] %}
+    {% for station in nearby_transport[: 10] %}
     const stationIcon{{ loop.index }} = L.divIcon({
-        html: '<i class="bi bi-train-front text-success fs-5"></i>',
+        html: '<i class="fas fa-train text-success fs-5"></i>',
         className: 'custom-marker',
         iconSize: [24, 24],
         iconAnchor: [12, 24]
@@ -215,7 +214,7 @@
 
     // Favorite toggle functionality
     const favoriteBtn = document.getElementById('favorite-btn-{{ property.id }}');
-    favoriteBtn.addEventListener('click', function() {
+    favoriteBtn.addEventListener('click', function () {
         const propertyId = this.dataset.propertyId;
         const isFavorite = this.dataset.isFavorite === 'true';
 
@@ -225,26 +224,26 @@
                 'Content-Type': 'application/json',
             }
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const icon = this.querySelector('i');
-                const text = this.querySelector('span');
-                
-                if (isFavorite) {
-                    icon.classList.remove('bi-heart-fill');
-                    icon.classList.add('bi-heart');
-                    text.textContent = 'Save';
-                    this.dataset.isFavorite = 'false';
-                } else {
-                    icon.classList.remove('bi-heart');
-                    icon.classList.add('bi-heart-fill');
-                    text.textContent = 'Saved';
-                    this.dataset.isFavorite = 'true';
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const icon = this.querySelector('i');
+                    const text = this.querySelector('span');
+
+                    if (isFavorite) {
+                        icon.classList.remove('bi-heart-fill');
+                        icon.classList.add('bi-heart');
+                        text.textContent = 'Save';
+                        this.dataset.isFavorite = 'false';
+                    } else {
+                        icon.classList.remove('bi-heart');
+                        icon.classList.add('bi-heart-fill');
+                        text.textContent = 'Saved';
+                        this.dataset.isFavorite = 'true';
+                    }
                 }
-            }
-        })
-        .catch(error => console.error('Error:', error));
+            })
+            .catch(error => console.error('Error:', error));
     });
 </script>
 
