@@ -14,9 +14,9 @@ def find_matching_properties(criteria):
         query = query.filter(Property.price <= criteria['max_price'])
     
     # Location filters
-    if criteria.get('counties'):
+    if criteria.get('counties') and len(criteria['counties']) > 0:
         query = query.filter(Property.county.in_(criteria['counties']))
-    if criteria.get('cities'):
+    if criteria.get('cities') and len(criteria['cities']) > 0:
         query = query.filter(Property.city.in_(criteria['cities']))
     
     # Property characteristics
@@ -25,7 +25,7 @@ def find_matching_properties(criteria):
     if criteria.get('max_bedrooms'):
         query = query.filter(Property.bedrooms <= criteria['max_bedrooms'])
     
-    if criteria.get('property_types'):
+    if criteria.get('property_types') and len(criteria['property_types']) > 0:
         query = query.filter(Property.property_type.in_(criteria['property_types']))
     
     if criteria.get('min_size_sqm'):
