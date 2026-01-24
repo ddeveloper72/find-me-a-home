@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results - Find Me a Home{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Search Header -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="bi bi-search"></i> Search Results</h1>
+                    <p class="text-muted">{{ properties|length }} propert{% if properties|length != 1 %}ies{% else %}y{% endif %} found</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('search.search_form') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Modify Search
+                    </a>
+                    {% if current_user.is_authenticated %}
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#saveSearchModal">
+                        <i class="bi bi-bookmark"></i> Save Search
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Filters Display -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h6 class="card-subtitle mb-2 text-muted">Active Filters:</h6>
+            <div class="d-flex flex-wrap gap-2">
+                {% if criteria.min_price or criteria.max_price %}
+                <span class="badge bg-primary">
+                    Price: 
+                    {% if criteria.min_price and criteria.max_price %}
+                    €{{ "{:,.0f}".format(criteria.min_price) }} - €{{ "{:,.0f}".format(criteria.max_price) }}
+                    {% elif criteria.min_price %}
+                    From €{{ "{:,.0f}".format(criteria.min_price) }}
+                    {% else %}
+                    Up to €{{ "{:,.0f}".format(criteria.max_price) }}
+                    {% endif %}
+                </span>
+                {% endif %}
+
+                {% if criteria.min_bedrooms %}
+                <span class="badge bg-primary">Bedrooms: {{ criteria.min_bedrooms }}+</span>
+                {% endif %}
+
+                {% if criteria.counties and criteria.counties|length > 0 %}
+                <span class="badge bg-primary">Counties: {{ criteria.counties|join(', ') }}</span>
+                {% endif %}
+
+                {% if criteria.cities and criteria.cities|length > 0 %}
+                <span class="badge bg-primary">Cities: {{ criteria.cities|join(', ') }}</span>
+                {% endif %}
+
+                {% if criteria.property_types and criteria.property_types|length > 0 %}
+                <span class="badge bg-primary">Types: {{ criteria.property_types|join(', ')|title }}</span>
+                {% endif %}
+
+                {% if criteria.max_school_distance_km %}
+                <span class="badge bg-success">Near Schools: {{ criteria.max_school_distance_km }} km</span>
+                {% endif %}
+
+                {% if criteria.max_transport_distance_km %}
+                <span class="badge bg-success">Near Transport: {{ criteria.max_transport_distance_km }} km</span>
+                {% endif %}
+
+                {% if not (criteria.min_price or criteria.max_price or criteria.min_bedrooms or criteria.counties or criteria.cities or criteria.property_types or criteria.max_school_distance_km or criteria.max_transport_distance_km) %}
+                <span class="text-muted">No filters applied - showing all properties</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Results -->
+    {% if properties %}
+    <div class="row">
+        {% for property in properties %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0">{{ property.title }}</h5>
+                        <button class="btn btn-sm btn-outline-danger favorite-btn" 
+                                data-property-id="{{ property.id }}">
+                            <i class="bi bi-heart"></i>
+                        </button>
+                    </div>
+
+                    <p class="h4 text-primary mb-3">€{{ "{:,.0f}".format(property.price) }}</p>
+
+                    <p class="text-muted small mb-3">
+                        <i class="bi bi-geo-alt"></i> {{ property.address }}
+                    </p>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-4">
+                            <small class="text-muted d-block">Bedrooms</small>
+                            <strong>{{ property.bedrooms }}</strong>
+                        </div>
+                        <div class="col-4">
+                            <small class="text-muted d-block">Bathrooms</small>
+                            <strong>{{ property.bathrooms }}</strong>
+                        </div>
+                        <div class="col-4">
+                            <small class="text-muted d-block">Size</small>
+                            <strong>{{ property.size_sqm }}m²</strong>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <span class="badge bg-secondary">{{ property.property_type }}</span>
+                    </div>
+
+                    <a href="{{ url_for('properties.property_detail', property_id=property.id) }}" 
+                       class="btn btn-primary w-100">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-search fs-1 text-muted mb-3 d-block"></i>
+            <h5>No Properties Found</h5>
+            <p class="text-muted">Try adjusting your search criteria to find more properties.</p>
+            <a href="{{ url_for('search.search_form') }}" class="btn btn-primary">
+                <i class="bi bi-arrow-left"></i> Modify Search
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Save Search Modal -->
+{% if current_user.is_authenticated %}
+<div class="modal fade" id="saveSearchModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Save This Search</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="saveSearchForm">
+                    <div class="mb-3">
+                        <label for="searchName" class="form-label">Search Name</label>
+                        <input type="text" class="form-control" id="searchName" 
+                               placeholder="e.g. Dublin 3-bed homes" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="alertFrequency" class="form-label">Email Alert Frequency</label>
+                        <select class="form-select" id="alertFrequency">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="never">No alerts</option>
+                        </select>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="emailAlerts" checked>
+                        <label class="form-check-label" for="emailAlerts">
+                            Send me email alerts for new matching properties
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveSearchBtn">Save Search</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+    // Favorite functionality
+    document.querySelectorAll('.favorite-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const propertyId = this.dataset.propertyId;
+            const icon = this.querySelector('i');
+            const isFavorite = icon.classList.contains('bi-heart-fill');
+
+            fetch(`/api/favorites/${isFavorite ? 'remove' : 'add'}/${propertyId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (isFavorite) {
+                        icon.classList.remove('bi-heart-fill');
+                        icon.classList.add('bi-heart');
+                    } else {
+                        icon.classList.remove('bi-heart');
+                        icon.classList.add('bi-heart-fill');
+                    }
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+
+    // Save search
+    {% if current_user.is_authenticated %}
+    document.getElementById('saveSearchBtn').addEventListener('click', function() {
+        const searchData = {
+            name: document.getElementById('searchName').value,
+            email_alerts: document.getElementById('emailAlerts').checked,
+            alert_frequency: document.getElementById('alertFrequency').value,
+            min_price: {{ criteria.min_price|default('null') }},
+            max_price: {{ criteria.max_price|default('null') }},
+            counties: {{ criteria.counties|tojson if criteria.counties else '[]' }},
+            cities: {{ criteria.cities|tojson if criteria.cities else '[]' }},
+            min_bedrooms: {{ criteria.min_bedrooms|default('null') }},
+            max_bedrooms: {{ criteria.max_bedrooms|default('null') }},
+            property_types: {{ criteria.property_types|tojson if criteria.property_types else '[]' }},
+            min_size_sqm: {{ criteria.min_size_sqm|default('null') }},
+            max_size_sqm: {{ criteria.max_size_sqm|default('null') }},
+            max_school_distance_km: {{ criteria.max_school_distance_km|default('null') }},
+            max_transport_distance_km: {{ criteria.max_transport_distance_km|default('null') }}
+        };
+
+        fetch('/search/save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(searchData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                bootstrap.Modal.getInstance(document.getElementById('saveSearchModal')).hide();
+                alert('Search saved successfully!');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+    {% endif %}
+</script>
+{% endblock %}

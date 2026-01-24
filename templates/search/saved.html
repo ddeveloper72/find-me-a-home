@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}Saved Searches - Find Me a Home{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1><i class="bi bi-bookmark"></i> Saved Searches</h1>
+            <p class="text-muted">Manage your saved property searches and email alerts</p>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <a href="{{ url_for('search.search_form') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> New Search
+            </a>
+        </div>
+    </div>
+
+    {% if searches %}
+    <div class="row">
+        {% for search in searches %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title mb-0">{{ search.name }}</h5>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('search.run_saved_search', search_id=search.id) }}">
+                                        <i class="bi bi-search"></i> Run Search
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger delete-search" 
+                                       href="#" 
+                                       data-search-id="{{ search.id }}"
+                                       data-search-name="{{ search.name }}">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            <i class="bi bi-calendar"></i> Created {{ search.created_at.strftime('%b %d, %Y') }}
+                        </small>
+                    </div>
+
+                    <!-- Search Criteria Summary -->
+                    <div class="mb-3">
+                        {% if search.min_price or search.max_price %}
+                        <div class="mb-2">
+                            <strong class="d-block text-muted small">Price Range</strong>
+                            {% if search.min_price and search.max_price %}
+                            €{{ "{:,.0f}".format(search.min_price) }} - €{{ "{:,.0f}".format(search.max_price) }}
+                            {% elif search.min_price %}
+                            From €{{ "{:,.0f}".format(search.min_price) }}
+                            {% else %}
+                            Up to €{{ "{:,.0f}".format(search.max_price) }}
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        {% if search.min_bedrooms or search.max_bedrooms %}
+                        <div class="mb-2">
+                            <strong class="d-block text-muted small">Bedrooms</strong>
+                            {% if search.min_bedrooms and search.max_bedrooms %}
+                            {{ search.min_bedrooms }} - {{ search.max_bedrooms }}
+                            {% elif search.min_bedrooms %}
+                            {{ search.min_bedrooms }}+
+                            {% else %}
+                            Up to {{ search.max_bedrooms }}
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        {% if search.counties %}
+                        <div class="mb-2">
+                            <strong class="d-block text-muted small">Counties</strong>
+                            {{ search.counties|join(', ') if search.counties is iterable and search.counties is not string else search.counties }}
+                        </div>
+                        {% endif %}
+
+                        {% if search.cities %}
+                        <div class="mb-2">
+                            <strong class="d-block text-muted small">Cities</strong>
+                            {{ search.cities|join(', ') if search.cities is iterable and search.cities is not string else search.cities }}
+                        </div>
+                        {% endif %}
+
+                        {% if search.property_types %}
+                        <div class="mb-2">
+                            <strong class="d-block text-muted small">Property Types</strong>
+                            {{ search.property_types|join(', ') if search.property_types is iterable and search.property_types is not string else search.property_types }}
+                        </div>
+                        {% endif %}
+
+                        {% if search.max_school_distance_km %}
+                        <div class="mb-2">
+                            <strong class="d-block text-muted small">Near Schools</strong>
+                            Within {{ search.max_school_distance_km }} km
+                        </div>
+                        {% endif %}
+
+                        {% if search.max_transport_distance_km %}
+                        <div class="mb-2">
+                            <strong class="d-block text-muted small">Near Transport</strong>
+                            Within {{ search.max_transport_distance_km }} km
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Email Alerts -->
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input toggle-alerts" 
+                                   type="checkbox" 
+                                   id="alerts-{{ search.id }}"
+                                   data-search-id="{{ search.id }}"
+                                   {% if search.email_alerts %}checked{% endif %}>
+                            <label class="form-check-label" for="alerts-{{ search.id }}">
+                                Email alerts ({{ search.alert_frequency or 'daily' }})
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <a href="{{ url_for('search.run_saved_search', search_id=search.id) }}" 
+                           class="btn btn-primary">
+                            <i class="bi bi-search"></i> Run Search
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-bookmark fs-1 text-muted mb-3 d-block"></i>
+                    <h5>No Saved Searches</h5>
+                    <p class="text-muted">Save your search criteria to get email alerts when new properties match your requirements.</p>
+                    <a href="{{ url_for('search.search_form') }}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Create Your First Search
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Saved Search</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete "<span id="deleteName"></span>"?</p>
+                <p class="text-muted small">This action cannot be undone and email alerts will be stopped.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Delete search
+    let deleteSearchId = null;
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+
+    document.querySelectorAll('.delete-search').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            deleteSearchId = this.dataset.searchId;
+            document.getElementById('deleteName').textContent = this.dataset.searchName;
+            deleteModal.show();
+        });
+    });
+
+    document.getElementById('confirmDelete').addEventListener('click', function() {
+        if (deleteSearchId) {
+            fetch(`/search/saved/${deleteSearchId}/delete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    });
+
+    // Toggle email alerts
+    document.querySelectorAll('.toggle-alerts').forEach(toggle => {
+        toggle.addEventListener('change', function() {
+            const searchId = this.dataset.searchId;
+            const enabled = this.checked;
+
+            fetch(`/search/saved/${searchId}/alerts`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ enabled: enabled })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    // Revert toggle if failed
+                    this.checked = !enabled;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                this.checked = !enabled;
+            });
+        });
+    });
+</script>
+{% endblock %}
