@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Transport Stations - Find Me a Home{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1><i class="bi bi-train-front"></i> Transport Stations</h1>
+            <p class="text-muted">Browse train stations across Ireland</p>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('transport.list_stations') }}" class="row g-3">
+                <div class="col-md-6">
+                    <label for="type" class="form-label">Station Type</label>
+                    <select class="form-select" id="type" name="type">
+                        <option value="">All Types</option>
+                        <option value="Train" {% if request.args.get('type') == 'Train' %}selected{% endif %}>Train</option>
+                        <option value="DART" {% if request.args.get('type') == 'DART' %}selected{% endif %}>DART</option>
+                        <option value="Luas" {% if request.args.get('type') == 'Luas' %}selected{% endif %}>Luas</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="county" class="form-label">County</label>
+                    <select class="form-select" id="county" name="county">
+                        <option value="">All Counties</option>
+                        <option value="Dublin" {% if request.args.get('county') == 'Dublin' %}selected{% endif %}>Dublin</option>
+                        <option value="Cork" {% if request.args.get('county') == 'Cork' %}selected{% endif %}>Cork</option>
+                        <option value="Galway" {% if request.args.get('county') == 'Galway' %}selected{% endif %}>Galway</option>
+                        <option value="Limerick" {% if request.args.get('county') == 'Limerick' %}selected{% endif %}>Limerick</option>
+                        <option value="Waterford" {% if request.args.get('county') == 'Waterford' %}selected{% endif %}>Waterford</option>
+                        <option value="Kildare" {% if request.args.get('county') == 'Kildare' %}selected{% endif %}>Kildare</option>
+                        <option value="Wicklow" {% if request.args.get('county') == 'Wicklow' %}selected{% endif %}>Wicklow</option>
+                        <option value="Meath" {% if request.args.get('county') == 'Meath' %}selected{% endif %}>Meath</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-funnel"></i> Apply Filters
+                    </button>
+                    <a href="{{ url_for('transport.list_stations') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i> Clear Filters
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">
+                {{ stations|length }} Station{% if stations|length != 1 %}s{% endif %} Found
+            </h5>
+
+            {% if stations %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Station Name</th>
+                            <th>Type</th>
+                            <th>County</th>
+                            <th>Address</th>
+                            <th>Routes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for station in stations %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('transport.station_detail', station_id=station.id) }}" class="text-decoration-none">
+                                    <strong>{{ station.name }}</strong>
+                                </a>
+                            </td>
+                            <td>
+                                <span class="badge bg-success">
+                                    {{ station.station_type or 'Train' }}
+                                </span>
+                            </td>
+                            <td>{{ station.county or 'N/A' }}</td>
+                            <td>
+                                <small class="text-muted">{{ station.address or 'Address not available' }}</small>
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ station.routes or 'N/A' }}</small>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('transport.station_detail', station_id=station.id) }}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> No stations found matching your criteria. Try adjusting the filters.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
