@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}{{ school.name }} - Find Me a Home{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Back Button -->
+    <div class="mb-3">
+        <a href="{{ url_for('schools.list_schools') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Schools
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- School Details -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="h2 mb-3">{{ school.name }}</h1>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="border rounded p-3">
+                                <div class="text-muted small">School Type</div>
+                                <strong>{{ school.school_type }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3">
+                                <div class="text-muted small">Gender</div>
+                                <strong>{{ school.gender or 'N/A' }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="border rounded p-3">
+                                <div class="text-muted small">County</div>
+                                <strong>{{ school.county or 'N/A' }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h3 class="h5"><i class="bi bi-geo-alt"></i> Address</h3>
+                        <p class="text-muted">{{ school.address or 'Address not available' }}</p>
+                    </div>
+
+                    {% if school.latitude and school.longitude %}
+                    <div class="mb-4">
+                        <h3 class="h5"><i class="bi bi-map"></i> Location</h3>
+                        <div id="map" style="height: 400px; border-radius: 8px;"></div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3 class="h6 mb-3">School Information</h3>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="bi bi-building text-primary"></i>
+                            <strong>Type:</strong> {{ school.school_type }}
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-people text-primary"></i>
+                            <strong>Gender:</strong> {{ school.gender or 'N/A' }}
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-geo-alt text-primary"></i>
+                            <strong>County:</strong> {{ school.county or 'N/A' }}
+                        </li>
+                        {% if school.latitude and school.longitude %}
+                        <li class="mb-2">
+                            <i class="bi bi-pin-map text-primary"></i>
+                            <strong>Coordinates:</strong><br>
+                            <small class="text-muted">{{ "%.4f"|format(school.latitude) }}, {{ "%.4f"|format(school.longitude) }}</small>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="h6 mb-3">Find Nearby Properties</h3>
+                    <p class="small text-muted">Search for properties near this school</p>
+                    <a href="{{ url_for('properties.list_properties', lat=school.latitude, lon=school.longitude, max_distance=5) }}" 
+                       class="btn btn-primary w-100">
+                        <i class="bi bi-house"></i> View Nearby Homes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if school.latitude and school.longitude %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+    // Initialize map
+    const map = L.map('map').setView([{{ school.latitude }}, {{ school.longitude }}], 15);
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19
+    }).addTo(map);
+
+    // Add school marker
+    const schoolIcon = L.divIcon({
+        html: '<i class="bi bi-book-fill text-primary fs-3"></i>',
+        className: 'custom-marker',
+        iconSize: [30, 30],
+        iconAnchor: [15, 30]
+    });
+
+    L.marker([{{ school.latitude }}, {{ school.longitude }}], { icon: schoolIcon })
+        .addTo(map)
+        .bindPopup('<strong>{{ school.name }}</strong><br>{{ school.school_type }}')
+        .openPopup();
+</script>
+
+<style>
+    .custom-marker {
+        background: transparent;
+        border: none;
+    }
+</style>
+{% endif %}
+{% endblock %}
