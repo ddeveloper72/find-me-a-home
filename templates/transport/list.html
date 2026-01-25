@@ -6,8 +6,24 @@
 <div class="container mt-4">
     <div class="row mb-4">
         <div class="col-md-12">
-            <h1><i class="bi bi-train-front"></i> Transport Stations</h1>
-            <p class="text-muted">Browse train stations across Ireland</p>
+            <h1>
+                {% if request.args.get('type') == 'bus' %}
+                <i class="bi bi-bus-front"></i> Bus Stops
+                {% elif request.args.get('type') == 'train' %}
+                <i class="bi bi-train-front"></i> Train Stations
+                {% else %}
+                <i class="bi bi-signpost-split"></i> Transport Stations
+                {% endif %}
+            </h1>
+            <p class="text-muted">
+                {% if request.args.get('type') == 'bus' %}
+                Browse bus stops across Ireland
+                {% elif request.args.get('type') == 'train' %}
+                Browse train stations across Ireland
+                {% else %}
+                Browse transport stations across Ireland
+                {% endif %}
+            </p>
         </div>
     </div>
 
@@ -15,12 +31,23 @@
     <div class="card mb-4">
         <div class="card-body">
             <form method="GET" action="{{ url_for('transport.list_stations') }}" class="row g-3">
+                <div class="col-md-12">
+                    <label for="search" class="form-label">Search Station Name</label>
+                    <div class="position-relative">
+                        <input type="text" class="form-control" id="search" name="search" 
+                               placeholder="Start typing to search..." 
+                               value="{{ request.args.get('search', '') }}"
+                               autocomplete="off">
+                        <div id="autocomplete-results" class="list-group position-absolute w-100" style="z-index: 1000; display: none; max-height: 300px; overflow-y: auto;"></div>
+                    </div>
+                    <small class="text-muted">Search by station or stop name</small>
+                </div>
                 <div class="col-md-6">
                     <label for="type" class="form-label">Station Type</label>
                     <select class="form-select" id="type" name="type">
                         <option value="">All Types</option>
-                        <option value="Train" {% if request.args.get('type')=='Train' %}selected{% endif %}>Train
-                        </option>
+                        <option value="train" {% if request.args.get('type')=='train' %}selected{% endif %}>Train</option>
+                        <option value="bus" {% if request.args.get('type')=='bus' %}selected{% endif %}>Bus</option>
                         <option value="DART" {% if request.args.get('type')=='DART' %}selected{% endif %}>DART</option>
                         <option value="Luas" {% if request.args.get('type')=='Luas' %}selected{% endif %}>Luas</option>
                     </select>
@@ -46,6 +73,9 @@
                         <option value="Meath" {% if request.args.get('county')=='Meath' %}selected{% endif %}>Meath
                         </option>
                     </select>
+                    <small class="text-muted" id="county-warning" style="display: none; color: #dc3545 !important;">
+                        <i class="bi bi-exclamation-triangle"></i> County filter not available for bus stops
+                    </small>
                 </div>
                 <div class="col-12">
                     <button type="submit" class="btn btn-primary">
@@ -63,7 +93,18 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">
-                {{ stations|length }} Station{% if stations|length != 1 %}s{% endif %} Found
+                {% if pagination.total > 0 %}
+                Showing {{ (pagination.page - 1) * pagination.per_page + 1 }} - {% if pagination.page * pagination.per_page < pagination.total %}{{ pagination.page * pagination.per_page }}{% else %}{{ pagination.total }}{% endif %} of {{ pagination.total }} 
+                {% if request.args.get('type') == 'bus' %}
+                Bus Stop{% if pagination.total != 1 %}s{% endif %}
+                {% elif request.args.get('type') == 'train' %}
+                Train Station{% if pagination.total != 1 %}s{% endif %}
+                {% else %}
+                Station{% if pagination.total != 1 %}s{% endif %}
+                {% endif %}
+                {% else %}
+                0 {% if request.args.get('type') == 'bus' %}Bus Stops{% elif request.args.get('type') == 'train' %}Train Stations{% else %}Stations{% endif %} Found
+                {% endif %}
             </h5>
 
             {% if stations %}
@@ -83,7 +124,7 @@
                         {% for station in stations %}
                         <tr>
                             <td>
-                                <a href="{{ url_for('transport.station_detail', station_id=station.id) }}"
+                                <a href="{{ url_for('transport.station_detail', station_id=station.id, type=request.args.get('type'), county=request.args.get('county'), search=request.args.get('search'), page=request.args.get('page')) }}"
                                     class="text-decoration-none">
                                     <strong>{{ station.name }}</strong>
                                 </a>
@@ -101,7 +142,7 @@
                                 <small class="text-muted">{{ station.routes or 'N/A' }}</small>
                             </td>
                             <td>
-                                <a href="{{ url_for('transport.station_detail', station_id=station.id) }}"
+                                <a href="{{ url_for('transport.station_detail', station_id=station.id, type=request.args.get('type'), county=request.args.get('county'), search=request.args.get('search'), page=request.args.get('page')) }}"
                                     class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-eye"></i> View
                                 </a>
@@ -111,12 +152,144 @@
                     </tbody>
                 </table>
             </div>
+            
+            <!-- Pagination -->
+            {% if pagination.pages > 1 %}
+            <nav aria-label="Station pagination">
+                <ul class="pagination justify-content-center">
+                    <!-- Previous -->
+                    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('transport.list_stations', type=request.args.get('type'), county=request.args.get('county'), search=request.args.get('search'), page=pagination.prev_num) if pagination.has_prev else '#' }}">
+                            Previous
+                        </a>
+                    </li>
+                    
+                    <!-- Page numbers -->
+                    {% for page_num in pagination.iter_pages(left_edge=2, right_edge=2, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                            <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('transport.list_stations', type=request.args.get('type'), county=request.args.get('county'), search=request.args.get('search'), page=page_num) }}">
+                                    {{ page_num }}
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <!-- Next -->
+                    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('transport.list_stations', type=request.args.get('type'), county=request.args.get('county'), search=request.args.get('search'), page=pagination.next_num) if pagination.has_next else '#' }}">
+                            Next
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            {% endif %}
+            
             {% else %}
             <div class="alert alert-info">
-                <i class="bi bi-info-circle"></i> No stations found matching your criteria. Try adjusting the filters.
+                <i class="bi bi-info-circle"></i> No {% if request.args.get('type') == 'bus' %}bus stops{% elif request.args.get('type') == 'train' %}train stations{% else %}stations{% endif %} found matching your criteria. Try adjusting the filters.
             </div>
             {% endif %}
         </div>
     </div>
 </div>
+
+<script>
+// Autocomplete functionality
+const searchInput = document.getElementById('search');
+const autocompleteResults = document.getElementById('autocomplete-results');
+const typeSelect = document.getElementById('type');
+let debounceTimer;
+
+searchInput.addEventListener('input', function() {
+    clearTimeout(debounceTimer);
+    const query = this.value.trim();
+    
+    if (query.length < 2) {
+        autocompleteResults.style.display = 'none';
+        return;
+    }
+    
+    debounceTimer = setTimeout(() => {
+        const stationType = typeSelect.value;
+        const url = `{{ url_for('transport.autocomplete') }}?q=${encodeURIComponent(query)}&type=${stationType}`;
+        
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length === 0) {
+                    autocompleteResults.style.display = 'none';
+                    return;
+                }
+                
+                autocompleteResults.innerHTML = data.map(station => `
+                    <a href="#" class="list-group-item list-group-item-action autocomplete-item" data-name="${station.name}">
+                        <div class="d-flex justify-content-between">
+                            <strong>${station.name}</strong>
+                            <small class="text-muted">${station.county}</small>
+                        </div>
+                        <small class="text-muted">
+                            <span class="badge bg-success">${station.type}</span>
+                        </small>
+                    </a>
+                `).join('');
+                
+                autocompleteResults.style.display = 'block';
+                
+                // Add click handlers
+                document.querySelectorAll('.autocomplete-item').forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        searchInput.value = this.dataset.name;
+                        autocompleteResults.style.display = 'none';
+                    });
+                });
+            })
+            .catch(error => console.error('Autocomplete error:', error));
+    }, 300);
+});
+
+// Hide autocomplete when clicking outside
+document.addEventListener('click', function(e) {
+    if (!searchInput.contains(e.target) && !autocompleteResults.contains(e.target)) {
+        autocompleteResults.style.display = 'none';
+    }
+});
+
+// Update autocomplete when type changes
+typeSelect.addEventListener('change', function() {
+    const selectedType = this.value;
+    const countySelect = document.getElementById('county');
+    const countyWarning = document.getElementById('county-warning');
+    
+    // Disable county filter for bus stops (they don't have county data yet)
+    if (selectedType === 'bus') {
+        countySelect.value = '';
+        countySelect.disabled = true;
+        countyWarning.style.display = 'block';
+    } else {
+        countySelect.disabled = false;
+        countyWarning.style.display = 'none';
+    }
+    
+    if (searchInput.value.trim().length >= 2) {
+        searchInput.dispatchEvent(new Event('input'));
+    }
+});
+
+// Initialize county filter state on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const selectedType = typeSelect.value;
+    const countySelect = document.getElementById('county');
+    const countyWarning = document.getElementById('county-warning');
+    
+    if (selectedType === 'bus') {
+        countySelect.disabled = true;
+        countyWarning.style.display = 'block';
+    }
+});
+</script>
+
 {% endblock %}

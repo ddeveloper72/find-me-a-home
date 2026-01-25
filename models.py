@@ -78,7 +78,8 @@ class TransportStation(db.Model):
     __tablename__ = 'transport_stations'
     
     id = db.Column(db.Integer, primary_key=True)
-    external_id = db.Column(db.String(100))  # ID from API
+    external_id = db.Column(db.String(100))  # ID from API/GTFS
+    station_code = db.Column(db.String(50))  # Public-facing code/number (e.g., bus stop number)
     name = db.Column(db.String(200), nullable=False)
     station_type = db.Column(db.String(50))  # train, bus, luas, etc.
     address = db.Column(db.String(300))

@@ -6,8 +6,8 @@
 <div class="container mt-4">
     <!-- Back Button -->
     <div class="mb-3">
-        <a href="{{ url_for('transport.list_stations') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Back to Stations
+        <a href="{{ url_for('transport.list_stations', type=request.args.get('type'), county=request.args.get('county'), search=request.args.get('search'), page=request.args.get('page')) }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to {% if request.args.get('type') == 'bus' %}Bus Stops{% elif request.args.get('type') == 'train' %}Train Stations{% else %}Stations{% endif %}
         </a>
     </div>
 
@@ -33,7 +33,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="border rounded p-3">
-                                <div class="text-muted small">Station Code</div>
+                                <div class="text-muted small">{% if station.station_type == 'bus' %}Stop #{% else %}Station Code{% endif %}</div>
                                 <strong>{{ station.station_code or 'N/A' }}</strong>
                             </div>
                         </div>
@@ -155,7 +155,7 @@
 
 <script>
     // Initialize map
-    const map = L.map('map').setView([{{ station.latitude }}, { { station.longitude } }], 15);
+    const map = L.map('map').setView([{{ station.latitude }}, {{ station.longitude }}], 15);
 
     // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -165,15 +165,33 @@
 
     // Add station marker
     const stationIcon = L.divIcon({
-        html: '<i class="bi bi-train-front-fill text-success fs-3"></i>',
+        html: '<i class="bi bi-{% if station.station_type == "bus" %}bus-front{% else %}train-front{% endif %}-fill text-success fs-3"></i>',
         className: 'custom-marker',
         iconSize: [30, 30],
         iconAnchor: [15, 30]
     });
 
+    {% if station.station_type == 'bus' %}
+    // Bus stop popup with routes and stop number
+    const popupContent = `
+        <strong>{{ station.name }}</strong><br>
+        {% if station.station_code %}<small><strong>Stop #:</strong> {{ station.station_code }}</small><br>{% endif %}
+        {% if station.routes %}
+        <small><strong>Routes:</strong> 
+        {% for route in station.routes %}
+            <span class="badge bg-primary" style="font-size: 0.8em;">{{ route }}</span>
+        {% endfor %}
+        </small>
+        {% endif %}
+    `;
+    {% else %}
+    // Train station popup
+    const popupContent = '<strong>{{ station.name }}</strong><br>{{ station.station_type or "Train" }} Station';
+    {% endif %}
+
     L.marker([{{ station.latitude }}, {{ station.longitude }}], { icon: stationIcon })
         .addTo(map)
-        .bindPopup('<strong>{{ station.name }}</strong><br>{{ station.station_type or "Train" }} Station')
+        .bindPopup(popupContent)
         .openPopup();
 </script>
 
