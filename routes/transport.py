@@ -100,6 +100,6 @@ def nearby_stations():
             'latitude': s.latitude,
             'longitude': s.longitude,
             'routes': s.routes,
-            'distance': s.distance
+            'distance_km': s.distance_km
         } for s in stations]
     })

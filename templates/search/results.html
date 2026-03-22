@@ -243,18 +243,17 @@
             name: document.getElementById('searchName').value,
             email_alerts: document.getElementById('emailAlerts').checked,
             alert_frequency: document.getElementById('alertFrequency').value,
-            min_price: {{ criteria.min_price if criteria.min_price else 'null' }
-    },
-        max_price: {{ criteria.max_price if criteria.max_price else 'null' }},
-        counties: {{ (criteria.counties | tojson) | safe if criteria.counties else '[]' }},
-    cities: { { (criteria.cities | tojson) | safe if criteria.cities else '[]' } },
-    min_bedrooms: { { criteria.min_bedrooms if criteria.min_bedrooms else 'null' } },
-    max_bedrooms: { { criteria.max_bedrooms if criteria.max_bedrooms else 'null' } },
-    property_types: { { (criteria.property_types | tojson) | safe if criteria.property_types else '[]' } },
-    min_size_sqm: { { criteria.min_size_sqm if criteria.min_size_sqm else 'null' } },
-    max_size_sqm: { { criteria.max_size_sqm if criteria.max_size_sqm else 'null' } },
-    max_school_distance_km: { { criteria.max_school_distance_km if criteria.max_school_distance_km else 'null' } },
-    max_transport_distance_km: { { criteria.max_transport_distance_km if criteria.max_transport_distance_km else 'null' } }
+            min_price: {{ criteria.min_price if criteria.min_price else 'null' }},
+            max_price: {{ criteria.max_price if criteria.max_price else 'null' }},
+            counties: {{ (criteria.counties | tojson) | safe if criteria.counties else '[]' }},
+            cities: {{ (criteria.cities | tojson) | safe if criteria.cities else '[]' }},
+            min_bedrooms: {{ criteria.min_bedrooms if criteria.min_bedrooms else 'null' }},
+            max_bedrooms: {{ criteria.max_bedrooms if criteria.max_bedrooms else 'null' }},
+            property_types: {{ (criteria.property_types | tojson) | safe if criteria.property_types else '[]' }},
+            min_size_sqm: {{ criteria.min_size_sqm if criteria.min_size_sqm else 'null' }},
+            max_size_sqm: {{ criteria.max_size_sqm if criteria.max_size_sqm else 'null' }},
+            max_school_distance_km: {{ criteria.max_school_distance_km if criteria.max_school_distance_km else 'null' }},
+            max_transport_distance_km: {{ criteria.max_transport_distance_km if criteria.max_transport_distance_km else 'null' }}
         };
 
     fetch('/search/save', {
