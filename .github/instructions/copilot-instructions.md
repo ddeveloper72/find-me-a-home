@@ -142,9 +142,11 @@ We have discovered several API options for Irish property data:
 ## Development Guidelines
 
 ### AI Session Documentation
-**IMPORTANT**: All AI-generated session documentation, working notes, and temporary analysis files should be placed in the `ai_sessions/` folder. This folder is excluded from Git tracking.
+**IMPORTANT**: All AI-generated session documentation, working notes, temporary analysis files, and utility scripts should be placed in the `ai_sessions/` folder. This folder is excluded from Git tracking.
 
 **Place in `ai_sessions/` folder:**
+
+**Documentation:**
 - ✅ Implementation summaries and progress tracking
 - ✅ Testing reports and endpoint analysis
 - ✅ API research and investigation notes
@@ -153,6 +155,24 @@ We have discovered several API options for Irish property data:
 - ✅ Data source analysis and comparison reports
 - ✅ Any AI-generated working notes not intended for end users
 
+**Scripts (`ai_sessions/scripts/`):**
+- ✅ Debug/analysis scripts (check_*, debug_*, analyze_*)
+- ✅ API discovery/research scripts (discover_*, introspect_*, verify_*)
+- ✅ One-off test scripts (test_* except test_endpoints.py)
+- ✅ Quick fix scripts (fix_*, cleanup_*, rescrape_*)
+- ✅ Obsolete/experimental import scripts
+- ✅ Data extraction utilities (extract_*, parse_*)
+- ✅ One-time migration scripts
+- ✅ Experimental feature scripts (seed_*, run_feasibility_*, enhance_*)
+
+**Keep in `scripts/` folder (production scripts only):**
+- ❌ Core data loaders (load_data.py, import_schools.py, import_bus_routes.py, import_gtfs_bus_stops.py, import_feed_scheduled.py)
+- ❌ Geocoding utilities (geocode_schools.py, geocode_train_stations.py, geocode_eircodes.py, reverse_geocode_*.py)
+- ❌ Data processing utilities (add_stop_codes.py, extract_station_counties.py)
+- ❌ Active database migrations (migrate_add_station_code.py)
+- ❌ Configuration checkers (check_geodirectory_config.py)
+- ❌ Production testing (test_endpoints.py)
+
 **Keep in project root or appropriate folders:**
 - ❌ README.md (main project documentation)
 - ❌ QUICKSTART.md, SETUP.md (user-facing setup guides)
@@ -160,7 +180,7 @@ We have discovered several API options for Irish property data:
 - ❌ data/README.md, data/*_SETUP.md (data documentation)
 - ❌ .github/instructions/* (AI behavior configuration)
 
-**Rationale**: Session documents are valuable during active development but clutter the repository for external users viewing the project on GitHub.
+**Rationale**: Session documents and utility scripts are valuable during active development but clutter the repository for external users viewing the project on GitHub. Only production-ready, reusable scripts belong in the main `scripts/` folder.
 
 ### Environment Setup
 1. Use Python virtual environment (.venv)

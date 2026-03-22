@@ -44,7 +44,7 @@ def geocode_with_google(eircode):
     }
     
     try:
-        response = requests.get(url, params=params, timeout=10)
+        response = requests.get(url, params=params, timeout=15)
         response.raise_for_status()
         data = response.json()
         
@@ -55,12 +55,24 @@ def geocode_with_google(eircode):
             return lat, lon
         elif data['status'] == 'ZERO_RESULTS':
             return None, None
+        elif data['status'] == 'REQUEST_DENIED':
+            print(f"    Google API error: {data.get('error_message', 'Request denied')}")
+            return None, None
         else:
-            print(f"    Google API error: {data.get('status', 'Unknown')}")
+            print(f"    Google API status: {data.get('status', 'Unknown')}")
             return None, None
             
+    except requests.exceptions.Timeout:
+        print(f"    Timeout error")
+        return None, None
+    except requests.exceptions.RequestException as e:
+        print(f"    Network error: {str(e)[:50]}")
+        return None, None
+    except KeyError as e:
+        print(f"    Parse error: {e}")
+        return None, None
     except Exception as e:
-        print(f"    Error: {e}")
+        print(f"    Error: {str(e)[:50]}")
         return None, None
 
 
@@ -106,6 +118,8 @@ def geocode_properties():
         print("⚠️  No Google Maps API key found in .env")
         print("   Add GOOGLE_MAPS_API_KEY to .env file for best Eircode support")
         print("   Falling back to Nominatim (OpenStreetMap)\n")
+    else:
+        print("✓ Using Google Maps Geocoding API (excellent Eircode support)\n")
     
     with app.app_context():
         # Find properties with no coordinates
@@ -117,14 +131,23 @@ def geocode_properties():
             print("No properties found that need geocoding")
             return
         
-        print(f"Found {len(properties)} properties with no coordinates\n")
+        # Prioritize properties with Eircodes
+        props_with_eircode = [p for p in properties if p.eircode]
+        props_without_eircode = [p for p in properties if not p.eircode]
+        
+        print(f"Found {len(properties)} properties with no coordinates")
+        print(f"  - {len(props_with_eircode)} with Eircode (high success expected)")
+        print(f"  - {len(props_without_eircode)} without Eircode\n")
         
         geocoded = 0
         failed = 0
         
-        for i, prop in enumerate(properties, 1):
+        # Process properties with Eircode first
+        all_props = props_with_eircode + props_without_eircode
+        
+        for i, prop in enumerate(all_props, 1):
             eircode_display = f" ({prop.eircode})" if prop.eircode else ""
-            print(f"[{i}/{len(properties)}] {prop.address}{eircode_display}...", end=' ')
+            print(f"[{i}/{len(all_props)}] {prop.title[:50]}{eircode_display}...")
             
             lat, lon = None, None
             
@@ -133,29 +156,29 @@ def geocode_properties():
                 lat, lon = geocode_with_google(prop.eircode)
             
             # Fallback to Nominatim if Google didn't work
-            if not lat:
+            if not lat and not lon:
                 lat, lon = geocode_with_nominatim(prop.address, prop.eircode)
             
             if lat and lon:
                 prop.latitude = lat
                 prop.longitude = lon
+                db.session.commit()  # Commit after each success
                 geocoded += 1
-                print(f"✓ ({lat:.6f}, {lon:.6f})")
+                print(f"   ✓ OK ({lat:.6f}, {lon:.6f})\n")
             else:
                 failed += 1
-                print("✗ Not found")
+                print(f"   ✗ FAILED\n")
             
             # Be respectful with API requests
-            if i < len(properties):
-                sleep(0.5 if GOOGLE_API_KEY else 1.0)
-        
-        # Commit changes
-        db.session.commit()
+            if i < len(all_props):
+                sleep(1.0 if GOOGLE_API_KEY else 1.5)
         
         print(f"\n{'='*70}")
         print("✓ Geocoding complete!")
         print(f"{'='*70}")
-        print(f"  Geocoded: {geocoded}")
+        print(f"  Geocoded: {geocoded}/{len(all_props)}")
+        print(f"  Failed:   {failed}/{len(all_props)}")
+        print(f"  Success rate: {geocoded/len(all_props)*100:.1f}%")
         print(f"  Failed:   {failed}")
         
         if GOOGLE_API_KEY:
