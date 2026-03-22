@@ -82,14 +82,25 @@ Find me a home/
 ### Properties
 We have discovered several API options for Irish property data:
 
-#### 1. **MyHome.ie API** (Undocumented - Currently Used)
-- **Endpoint**: `https://api.myhome.ie/home`
+#### 1. **MyHome.ie Brochure API** (✅ **PRODUCTION READY**)
+- **Endpoints**: 
+  - `https://api.myhome.ie/home` - Get property IDs
+  - `https://api.myhome.ie/brochure/{id}` - Get complete property details
+- **API Key**: `4284149e-13da-4f12-aed7-0d644a0b7adb` (public, from browser requests)
 - **Format**: JSON
-- **Status**: ✅ Working (undocumented internal API)
-- **Data**: Property listings, prices, BER ratings, images, addresses
-- **Limitations**: No coordinates, no descriptions, structure may change
-- **Implementation**: `scripts/import_myhome_properties.py`
+- **Status**: ✅ **Fully Working** - Complete data with coordinates
+- **Data**: 
+  - ✅ Full property details (11,336+ residential for sale)
+  - ✅ **Latitude/Longitude coordinates** 
+  - ✅ **Complete descriptions** (HTML)
+  - ✅ Multiple photos, floor plans
+  - ✅ BER ratings, price history
+  - ✅ Agent details, viewings
+- **Implementation**: `scripts/import_myhome_brochure.py`
+- **Discovery**: Found by inspecting browser network requests on property pages
 - **Owner**: The Irish Times (verified via DNS: irishtimes.map.fastly.net)
+- **Documentation**: See [MYHOME_API_COMPLETE.md](../../MYHOME_API_COMPLETE.md)
+- **Rate Limiting**: 1 request/second recommended (no official limits)
 
 #### 2. **Daft.ie API** (Documented - Pending Access)
 - **Endpoint**: `https://api.daft.ie/v3/`
@@ -129,6 +140,27 @@ We have discovered several API options for Irish property data:
 - GTFS-R feed (requires API key from data.gov.ie)
 
 ## Development Guidelines
+
+### AI Session Documentation
+**IMPORTANT**: All AI-generated session documentation, working notes, and temporary analysis files should be placed in the `ai_sessions/` folder. This folder is excluded from Git tracking.
+
+**Place in `ai_sessions/` folder:**
+- ✅ Implementation summaries and progress tracking
+- ✅ Testing reports and endpoint analysis
+- ✅ API research and investigation notes
+- ✅ Session debugging notes (cookies, authentication, etc.)
+- ✅ Commit planning documents
+- ✅ Data source analysis and comparison reports
+- ✅ Any AI-generated working notes not intended for end users
+
+**Keep in project root or appropriate folders:**
+- ❌ README.md (main project documentation)
+- ❌ QUICKSTART.md, SETUP.md (user-facing setup guides)
+- ❌ API_ENDPOINTS_DOCUMENTATION.md (developer reference)
+- ❌ data/README.md, data/*_SETUP.md (data documentation)
+- ❌ .github/instructions/* (AI behavior configuration)
+
+**Rationale**: Session documents are valuable during active development but clutter the repository for external users viewing the project on GitHub.
 
 ### Environment Setup
 1. Use Python virtual environment (.venv)
@@ -196,17 +228,16 @@ We have discovered several API options for Irish property data:
 - Status: Placeholder implementation
 
 ## Future Enhancements
-- [x] Property API integration (MyHome.ie working, Daft.ie ready)
-- [ ] Geocode MyHome.ie properties for map functionality
+- [x] Property scraping (Homestra working)
+- [x] Lots/sites with serviced amenity tracking
 - [ ] Add background jobs for data updates (APScheduler)
 - [ ] Implement email alert system
-- [ ] Add property image galleries
 - [ ] Price trend analysis (PropertyInsight.ie integration)
 - [ ] Mortgage calculator
 - [ ] Commute time calculator
 - [ ] Mobile responsive improvements
 - [ ] Unit tests and CI/CD
-- [ ] Switch to Daft.ie API when personal key is approved
+- [ ] Use Piloterr API to enhance properties with listing dates
 
 ## Resources & Links
 
@@ -215,9 +246,8 @@ We have discovered several API options for Irish property data:
 - GTFS-R Data: https://data.gov.ie/dataset/realtime-passenger-information-gtfsr
 
 **Properties:**
-- MyHome.ie: www.myhome.ie | API: https://api.myhome.ie/home (undocumented)
-- Daft.ie: www.daft.ie | API: https://api.daft.ie/v3/ (documented, personal use available)
-- Daft.ie Docs: https://api.daft.ie/doc/v3/ | Terms: https://api.daft.ie/terms/
+- Homestra: https://homestra.com (affordable Irish properties <EUR100k)
+- Piloterr API: https://api.piloterr.com/v2/homestra/ad (official Homestra API)
 - Property.ie: www.property.ie (RSS feeds blocked for automation)
 - PropertyInsight.ie: https://propertyinsight.ie/features/api (commercial, historical data)
 
