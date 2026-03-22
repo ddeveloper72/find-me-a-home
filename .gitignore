@@ -41,11 +41,8 @@ Thumbs.db
 # Azure
 .azure/
 
-# Session documentation and security reviews
-SECURITY_REVIEW.md
-session*.md
-*_TRANSCRIPT.md
-*_NOTES.md
+# AI session documentation and working notes
+ai_sessions/
 
 #Ignore vscode AI rules
 .github\instructions\codacy.instructions.md
