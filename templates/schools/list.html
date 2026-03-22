@@ -43,9 +43,9 @@
                     <label for="type" class="form-label">School Type</label>
                     <select class="form-select" id="type" name="type">
                         <option value="">All Types</option>
-                        <option value="Primary" {% if request.args.get('type')=='Primary' %}selected{% endif %}>Primary
+                        <option value="primary" {% if request.args.get('type')=='primary' %}selected{% endif %}>Primary
                         </option>
-                        <option value="Post-Primary" {% if request.args.get('type')=='Post-Primary' %}selected{% endif
+                        <option value="post-primary" {% if request.args.get('type')=='post-primary' %}selected{% endif
                             %}>Post-Primary</option>
                     </select>
                 </div>
