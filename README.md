@@ -188,7 +188,7 @@ Personal use only.
 
 ## Contact
 
-Duncan - [Your Email]
+GitHub: [@ddeveloper72](https://github.com/ddeveloper72)
 ```
 
 ## Troubleshooting

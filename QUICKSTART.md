@@ -11,7 +11,7 @@
 ### 1. Set Up Virtual Environment
 ```powershell
 # Navigate to project directory
-cd "c:\Users\Duncan\VS_Code_Projects\Find me a home"
+# cd "Find me a home"  # Navigate to your project directory
 
 # Create virtual environment
 python -m venv .venv
